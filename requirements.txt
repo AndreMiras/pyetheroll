@@ -6,3 +6,4 @@ web3==4.0.0b11
 https://github.com/ethereum/pyethapp/archive/8406f32.zip#egg=pyethapp
 rlp==0.6.0
 requests-cache
+eth-utils==1.2.2

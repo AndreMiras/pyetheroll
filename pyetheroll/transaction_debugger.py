@@ -1,8 +1,8 @@
 import json
 
 from eth_abi import decode_abi
-from ethereum.abi import method_id as get_abi_method_id
-from ethereum.utils import decode_hex, encode_int, zpad
+from eth_utils.abi import function_abi_to_4byte_selector
+from ethereum.utils import decode_hex
 from web3 import HTTPProvider, Web3
 
 from pyetheroll.constants import ChainID
@@ -20,15 +20,10 @@ def decode_contract_call(contract_abi: list, call_data: str):
     for description in contract_abi:
         if description.get('type') != 'function':
             continue
-        method_name = description['name']
-        arg_types = [item['type'] for item in description['inputs']]
-        method_id = get_abi_method_id(method_name, arg_types)
-        if zpad(encode_int(method_id), 4) == method_signature:
-            try:
-                args = decode_abi(arg_types, call_data_bin[4:])
-            except AssertionError:
-                # Invalid args
-                continue
+        if function_abi_to_4byte_selector(description) == method_signature:
+            method_name = description['name']
+            arg_types = [item['type'] for item in description['inputs']]
+            args = decode_abi(arg_types, call_data_bin[4:])
             return method_name, args
 
 
