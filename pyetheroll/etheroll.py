@@ -6,7 +6,7 @@ from datetime import datetime
 
 import requests
 import requests_cache
-from ethereum.utils import checksum_encode
+from eth_utils import to_checksum_address
 from etherscan.client import EmptyResponse
 from hexbytes.main import HexBytes
 from pyethapp.accounts import Account
@@ -154,7 +154,7 @@ class Etheroll:
         # since Account.load is hanging while decrypting the password
         # we set password to None and use `w3.eth.account.decrypt` instead
         account = Account.load(wallet_path, password=None)
-        from_address_normalized = checksum_encode(account.address)
+        from_address_normalized = to_checksum_address(account.address)
         nonce = self.web3.eth.getTransactionCount(from_address_normalized)
         transaction = {
             'chainId': self.chain_id.value,

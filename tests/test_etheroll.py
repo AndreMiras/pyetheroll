@@ -7,6 +7,7 @@ from tempfile import mkdtemp
 from unittest import mock
 
 from eth_account.internal.transactions import assert_valid_fields
+from eth_utils import to_checksum_address
 from ethereum.tools.keys import PBKDF2_CONSTANTS
 from pyethapp.accounts import Account
 
@@ -184,6 +185,13 @@ class TestEtheroll(unittest.TestCase):
                 bet_size_ether, chances, wallet_path, wallet_password)
             # the method should return a transaction hash
             self.assertIsNotNone(transaction)
+            # and getTransactionCount been called with the normalized address
+            normalized_address = to_checksum_address(account.address.hex())
+            self.assertEqual(
+                m_getTransactionCount.call_args_list,
+                [mock.call(normalized_address)]
+            )
+            # getTransactionCount
             # a second one with custom gas (in gwei), refs #23
             gas_price_gwei = 12
             transaction = etheroll.player_roll_dice(
