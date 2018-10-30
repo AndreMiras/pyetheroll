@@ -214,7 +214,7 @@ class TestTransactionDebugger(unittest.TestCase):
         self.assertEqual(method_name, 'transfer')
         self.assertEqual(
             args,
-            ['0x67fa2c06c9c6d4332f330e14a66bdf1873ef3d2b', 1000000000000000000]
+            ('0x67fa2c06c9c6d4332f330e14a66bdf1873ef3d2b', 1000000000000000000)
         )
 
     def test_decode_contract_call_callback(self):
@@ -263,14 +263,7 @@ class TestTransactionDebugger(unittest.TestCase):
         proof = bytes.fromhex(
             '1220ba7237d9ed277fdd4bf2b358049b1c5e971b2bc5fa0edd47b3345d3890e4'
             '15fc')
-        self.assertEqual(
-            args,
-            [
-                myid,
-                result,
-                proof,
-            ]
-        )
+        self.assertEqual(args, (myid, result, proof))
 
     def m_get_abi(self, instance):
         """
