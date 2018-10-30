@@ -14,7 +14,6 @@ from web3 import Web3
 from web3.auto import w3
 from web3.contract import Contract
 
-from ethereum_utils import AccountUtils
 from pyetheroll.constants import DEFAULT_GAS_PRICE_GWEI, ROUND_DIGITS, ChainID
 from pyetheroll.etherscan_utils import (ChainEtherscanAccountFactory,
                                         ChainEtherscanContractFactory,
@@ -166,12 +165,25 @@ class Etheroll:
         }
         transaction = self.contract.functions.playerRollDice(
             roll_under).buildTransaction(transaction)
-        private_key = AccountUtils.get_private_key(
+        private_key = self.get_private_key(
             wallet_path, wallet_password)
         signed_tx = self.web3.eth.account.signTransaction(
             transaction, private_key)
         tx_hash = self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
         return tx_hash
+
+    @staticmethod
+    def get_private_key(wallet_path, wallet_password):
+        """
+        Given wallet path and password, returns private key.
+        Made this way to workaround pyethapp slow account management:
+        https://github.com/ethereum/pyethapp/issues/292
+        """
+        # lazy loading
+        from web3.auto import w3
+        encrypted_key = open(wallet_path).read()
+        private_key = w3.eth.account.decrypt(encrypted_key, wallet_password)
+        return private_key
 
     def get_transaction_page(
             self, address=None, page=1, offset=100, internal=False):
