@@ -5,6 +5,7 @@
 
   - Add tox testing
   - Enable Travis CI
+  - Installable module
 
 
 ## [v20181029]
