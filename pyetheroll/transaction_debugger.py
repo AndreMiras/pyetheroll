@@ -2,7 +2,6 @@ import json
 
 from eth_abi import decode_abi
 from ethereum.abi import method_id as get_abi_method_id
-from ethereum.abi import normalize_name as normalize_abi_method_name
 from ethereum.utils import decode_hex, encode_int, zpad
 from web3 import HTTPProvider, Web3
 
@@ -21,7 +20,7 @@ def decode_contract_call(contract_abi: list, call_data: str):
     for description in contract_abi:
         if description.get('type') != 'function':
             continue
-        method_name = normalize_abi_method_name(description['name'])
+        method_name = description['name']
         arg_types = [item['type'] for item in description['inputs']]
         method_id = get_abi_method_id(method_name, arg_types)
         if zpad(encode_int(method_id), 4) == method_signature:
