@@ -4,6 +4,7 @@
 ## [Unreleased]
 
   - Add tox testing
+  - Enable Travis CI
 
 
 ## [v20181029]
