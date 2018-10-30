@@ -1,8 +1,7 @@
 import json
 
 from eth_abi import decode_abi
-from eth_utils.abi import function_abi_to_4byte_selector
-from ethereum.utils import decode_hex
+from eth_utils import decode_hex, function_abi_to_4byte_selector
 from web3 import HTTPProvider, Web3
 
 from pyetheroll.constants import ChainID
