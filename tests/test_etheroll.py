@@ -8,7 +8,6 @@ from tempfile import mkdtemp
 from unittest import mock
 
 import eth_account
-# from eth_account import Account
 from eth_account.internal.transactions import assert_valid_fields
 from eth_keyfile import create_keyfile_json
 
@@ -155,10 +154,11 @@ class TestEtheroll(unittest.TestCase):
         Reduces the PBKDF2 iterations/work-factor to speed up account creation.
         """
         wallet_path = os.path.join(self.keystore_dir, 'wallet.json')
-        # monkey patching to set iterations to the minimum
+        account = eth_account.Account.create()
+        # monkey patching to set iterations to the minimum, refs:
+        # https://github.com/ethereum/eth-account/issues/48
         eth_account.account.create_keyfile_json = partial(
             create_keyfile_json, iterations=1)
-        account = eth_account.Account.create()
         encrypted = eth_account.Account.encrypt(account.privateKey, password)
         with open(wallet_path, 'w') as f:
             f.write(json.dumps(encrypted))
