@@ -4,6 +4,7 @@
 ## [Unreleased]
 
   - Remove legacy pyetherapp & pyethereum dependencies
+  - Migrate to pipenv, refs #1
 
 
 ## [20181030]
