@@ -14,7 +14,7 @@ dependency_links = [
      '/archive/18ee101.zip#egg=py-etherscan-api-0.7.0'),
 ]
 setup(name='pyetheroll',
-      version='20181030',
+      version='20181031',
       description='Python library to Etheroll smart contract',
       author='Andre Miras',
       url='https://github.com/AndreMiras/pyetheroll',
