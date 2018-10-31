@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+
+[packages]
+isort = "*"
+py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip"}
+eth-account = "==0.3.0"
+"web3" = "==4.8.1"
+rlp = "==1.0.3"
+requests-cache = "==0.4.13"
+eth-utils = "==1.2.2"
+
+[requires]
+python_version = "3.6"
