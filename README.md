@@ -14,7 +14,7 @@ from pyetheroll.etheroll import Etheroll
 etheroll = Etheroll()
 bet_size_ether = 0.1
 chances = 50
-wallet_path = '~/.ethereum/keystore/wallet.json'
+wallet_path = 'wallet.json'
 wallet_password = 'password'
 
 transaction = etheroll.player_roll_dice(
@@ -33,12 +33,14 @@ etheroll = Etheroll(chain_id, contract_address)
 
 ## Install
 
-Latest stable release:
+[Latest stable release](https://github.com/AndreMiras/pyetheroll/tree/master):
 ```sh
-pip install https://github.com/AndreMiras/pyetheroll/archive/master.zip
+pip install --process-dependency-links \
+https://github.com/AndreMiras/pyetheroll/archive/master.zip
 ```
 
-Development branch:
+[Development branch](https://github.com/AndreMiras/pyetheroll/tree/develop):
 ```sh
-pip install https://github.com/AndreMiras/pyetheroll/archive/develop.zip
+pip install --process-dependency-links \
+https://github.com/AndreMiras/pyetheroll/archive/develop.zip
 ```

@@ -1,6 +1,13 @@
 # Change Log
 
 
+## [20181031]
+
+  - Remove legacy pyetherapp & pyethereum dependencies
+  - Migrate to pipenv, refs #1
+  - Improve install from setup.py
+
+
 ## [20181030]
 
   - Add tox testing
