@@ -6,10 +6,11 @@ from datetime import datetime
 
 import requests
 import requests_cache
+from eth_account import Account
+from eth_keyfile import load_keyfile
 from eth_utils import to_checksum_address
 from etherscan.client import EmptyResponse
 from hexbytes.main import HexBytes
-from pyethapp.accounts import Account
 from web3 import Web3
 from web3.auto import w3
 from web3.contract import Contract
@@ -151,10 +152,9 @@ class Etheroll:
         value_wei = int(bet_size_ether * 1e18)
         gas = 310000
         gas_price = w3.toWei(gas_price_gwei, 'gwei')
-        # since Account.load is hanging while decrypting the password
-        # we set password to None and use `w3.eth.account.decrypt` instead
-        account = Account.load(wallet_path, password=None)
-        from_address_normalized = to_checksum_address(account.address)
+        wallet_encrypted = load_keyfile(wallet_path)
+        address = wallet_encrypted['address']
+        from_address_normalized = to_checksum_address(address)
         nonce = self.web3.eth.getTransactionCount(from_address_normalized)
         transaction = {
             'chainId': self.chain_id.value,
@@ -165,25 +165,11 @@ class Etheroll:
         }
         transaction = self.contract.functions.playerRollDice(
             roll_under).buildTransaction(transaction)
-        private_key = self.get_private_key(
-            wallet_path, wallet_password)
+        private_key = Account.decrypt(wallet_encrypted, wallet_password)
         signed_tx = self.web3.eth.account.signTransaction(
             transaction, private_key)
         tx_hash = self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
         return tx_hash
-
-    @staticmethod
-    def get_private_key(wallet_path, wallet_password):
-        """
-        Given wallet path and password, returns private key.
-        Made this way to workaround pyethapp slow account management:
-        https://github.com/ethereum/pyethapp/issues/292
-        """
-        # lazy loading
-        from web3.auto import w3
-        encrypted_key = open(wallet_path).read()
-        private_key = w3.eth.account.decrypt(encrypted_key, wallet_password)
-        return private_key
 
     def get_transaction_page(
             self, address=None, page=1, offset=100, internal=False):
