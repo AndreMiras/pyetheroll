@@ -1,10 +1,7 @@
 import json
 
-import eth_abi
-from ethereum.abi import decode_abi
-from ethereum.abi import method_id as get_abi_method_id
-from ethereum.abi import normalize_name as normalize_abi_method_name
-from ethereum.utils import decode_hex, encode_int, zpad
+from eth_abi import decode_abi
+from eth_utils import decode_hex, function_abi_to_4byte_selector
 from web3 import HTTPProvider, Web3
 
 from pyetheroll.constants import ChainID
@@ -22,16 +19,10 @@ def decode_contract_call(contract_abi: list, call_data: str):
     for description in contract_abi:
         if description.get('type') != 'function':
             continue
-        method_name = normalize_abi_method_name(description['name'])
-        arg_types = [item['type'] for item in description['inputs']]
-        method_id = get_abi_method_id(method_name, arg_types)
-        if zpad(encode_int(method_id), 4) == method_signature:
-            try:
-                # TODO: ethereum.abi.decode_abi vs eth_abi.decode_abi
-                args = decode_abi(arg_types, call_data_bin[4:])
-            except AssertionError:
-                # Invalid args
-                continue
+        if function_abi_to_4byte_selector(description) == method_signature:
+            method_name = description['name']
+            arg_types = [item['type'] for item in description['inputs']]
+            args = decode_abi(arg_types, call_data_bin[4:])
             return method_name, args
 
 
@@ -117,7 +108,7 @@ class TransactionDebugger:
         # is crashing with `InsufficientDataBytes` during `LogResult` decoding.
         types = ['bytes32' if t == 'bytes' else t for t in types]
         names = [e_input['name'] for e_input in event_inputs]
-        values = eth_abi.decode_abi(types, topics_log_data)
+        values = decode_abi(types, topics_log_data)
         call = {name: value for name, value in zip(names, values)}
         decoded_method = {
             'method_info': method_info,

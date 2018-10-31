@@ -1,6 +1,11 @@
 # Change Log
 
 
+## [Unreleased]
+
+  - Remove legacy pyetherapp & pyethereum dependencies
+
+
 ## [20181030]
 
   - Add tox testing

@@ -3,12 +3,14 @@ import os
 import shutil
 import unittest
 from datetime import datetime
+from functools import partial
 from tempfile import mkdtemp
 from unittest import mock
 
+import eth_account
+# from eth_account import Account
 from eth_account.internal.transactions import assert_valid_fields
-from ethereum.tools.keys import PBKDF2_CONSTANTS
-from pyethapp.accounts import Account
+from eth_keyfile import create_keyfile_json
 
 from pyetheroll.constants import ChainID
 from pyetheroll.etheroll import Etheroll
@@ -149,12 +151,19 @@ class TestEtheroll(unittest.TestCase):
         self.assertIsNotNone(etheroll.contract)
 
     def create_account_helper(self, password):
-        # reduces key derivation iterations to speed up creation
-        PBKDF2_CONSTANTS['c'] = 1
+        """
+        Reduces the PBKDF2 iterations/work-factor to speed up account creation.
+        """
         wallet_path = os.path.join(self.keystore_dir, 'wallet.json')
-        account = Account.new(password, path=wallet_path)
-        with open(account.path, 'w') as f:
-            f.write(account.dump())
+        # monkey patching to set iterations to the minimum
+        eth_account.account.create_keyfile_json = partial(
+            create_keyfile_json, iterations=1)
+        account = eth_account.Account.create()
+        encrypted = eth_account.Account.encrypt(account.privateKey, password)
+        with open(wallet_path, 'w') as f:
+            f.write(json.dumps(encrypted))
+        # a bit hacky, but OK for now
+        account.path = wallet_path
         return account
 
     def test_player_roll_dice(self):
@@ -184,6 +193,13 @@ class TestEtheroll(unittest.TestCase):
                 bet_size_ether, chances, wallet_path, wallet_password)
             # the method should return a transaction hash
             self.assertIsNotNone(transaction)
+            # and getTransactionCount been called with the normalized address
+            normalized_address = account.address
+            self.assertEqual(
+                m_getTransactionCount.call_args_list,
+                [mock.call(normalized_address)]
+            )
+            # getTransactionCount
             # a second one with custom gas (in gwei), refs #23
             gas_price_gwei = 12
             transaction = etheroll.player_roll_dice(
@@ -206,8 +222,8 @@ class TestEtheroll(unittest.TestCase):
         }
         expected_transaction2 = expected_transaction1.copy()
         expected_transaction2['gasPrice'] = 12*1e9
-        expected_call1 = mock.call(expected_transaction1, account.privkey)
-        expected_call2 = mock.call(expected_transaction2, account.privkey)
+        expected_call1 = mock.call(expected_transaction1, account.privateKey)
+        expected_call2 = mock.call(expected_transaction2, account.privateKey)
         # the method should have been called only once
         expected_calls = [expected_call1, expected_call2]
         self.assertEqual(m_signTransaction.call_args_list, expected_calls)
