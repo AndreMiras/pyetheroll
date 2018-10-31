@@ -12,7 +12,6 @@ git flow release start YYYYMMDD
 ```
 Now update the [CHANGELOG.md](/CHANGELOG.md) `[Unreleased]` section to match the new release version.
 Also update the `version` string in the [setup.py](/setup.py) file. Then commit and finish release.
-Optionally already update the direct download link from the [README.md](/README.md).
 ```
 git commit -a -m "YYYYMMDD"
 git flow release finish

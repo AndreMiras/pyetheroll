@@ -1,7 +1,7 @@
 # Change Log
 
 
-## [Unreleased]
+## [20181031]
 
   - Remove legacy pyetherapp & pyethereum dependencies
   - Migrate to pipenv, refs #1
