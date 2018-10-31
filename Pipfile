@@ -4,19 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-ipdb = {version="*"}
-pytest = {version="*"}
 flake8 = {version="*"}
+ipdb = {version="*"}
 isort = {version="*"}
+pytest = {version="*"}
 
 [packages]
-py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip"}
 eth-account = "*"
-"web3" = "*"
-rlp = "*"
-requests-cache = "*"
 eth-utils = "*"
 pycryptodome = "*"
+py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip"}
+requests-cache = "*"
+rlp = "*"
+"web3" = "*"
 
 [requires]
 python_version = "3.6"
