@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+ipdb = {version="*"}
+pytest = {version="*"}
+flake8 = {version="*"}
+isort = {version="*"}
+
+[packages]
+py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip"}
+eth-account = "*"
+"web3" = "*"
+rlp = "*"
+requests-cache = "*"
+eth-utils = "*"
+pycryptodome = "*"
+
+[requires]
+python_version = "3.6"
