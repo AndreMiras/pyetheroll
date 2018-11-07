@@ -10,25 +10,33 @@ from pyetheroll.constants import ChainID
 logger = logging.getLogger(__name__)
 
 
-def get_etherscan_api_key():
+def get_etherscan_api_key(api_key_path: str = None) -> str:
     """
-    Tries to retrieve etherscan API key from environment or from file.
+    Tries to retrieve etherscan API key from path or from environment.
+    The files content should be in the form:
+    ```json
+    { "key" : "YourApiKeyToken" }
+    ```
     """
-    ETHERSCAN_API_KEY = os.environ.get('ETHERSCAN_API_KEY')
-    if ETHERSCAN_API_KEY is None:
-        location = os.path.realpath(
-            os.path.join(os.getcwd(), os.path.dirname(__file__)))
-        api_key_path = str(os.path.join(location, 'api_key.json'))
-        try:
-            with open(api_key_path, mode='r') as key_file:
-                ETHERSCAN_API_KEY = json.loads(key_file.read())['key']
-        except FileNotFoundError:
-            ETHERSCAN_API_KEY = 'YourApiKeyToken'
+    DEFAULT_API_KEY_TOKEN = 'YourApiKeyToken'
+    etherscan_api_key = os.environ.get('ETHERSCAN_API_KEY')
+    if etherscan_api_key is not None:
+        return etherscan_api_key
+    elif api_key_path is None:
             logger.warning(
                 'Cannot get Etherscan API key. '
-                'File {} not found, defaulting to `{}`.'.format(
-                    api_key_path, ETHERSCAN_API_KEY))
-    return ETHERSCAN_API_KEY
+                f'No path provided, defaulting to {DEFAULT_API_KEY_TOKEN}.')
+            return DEFAULT_API_KEY_TOKEN
+    else:
+        try:
+            with open(api_key_path, mode='r') as key_file:
+                etherscan_api_key = json.loads(key_file.read())['key']
+        except FileNotFoundError:
+            logger.warning(
+              f'Cannot get Etherscan API key. File {api_key_path} not found, '
+              f'defaulting to {DEFAULT_API_KEY_TOKEN}.')
+            return DEFAULT_API_KEY_TOKEN
+    return etherscan_api_key
 
 
 class RopstenEtherscanContract(EtherscanContract):
