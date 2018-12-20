@@ -31,6 +31,8 @@ contract_address = '0xe12c6dEb59f37011d2D9FdeC77A6f1A8f3B8B1e8'
 etheroll = Etheroll(chain_id, contract_address)
 ```
 
+Find out more in [docs/Examples.md](docs/Examples.md).
+
 ## Install
 
 [Latest stable release](https://github.com/AndreMiras/pyetheroll/tree/master):
