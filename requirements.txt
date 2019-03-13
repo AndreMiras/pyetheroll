@@ -4,3 +4,4 @@ https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip#egg=py-ethersca
 requests-cache==0.4.13
 rlp==1.0.3
 web3==4.8.1
+m2r==0.2.1
