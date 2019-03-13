@@ -1,6 +1,11 @@
 # Change Log
 
 
+## [Unreleased]
+
+  - Add readthedocs Sphinx documentation, refs #2
+
+
 ## [20181031]
 
   - Remove legacy pyetherapp & pyethereum dependencies

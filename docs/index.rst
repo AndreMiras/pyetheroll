@@ -11,6 +11,8 @@ Welcome to pyetheroll's documentation!
    :caption: Contents:
 
    readme.rst
+   Examples.md
+   Release.md
 
 
 Indices and tables
