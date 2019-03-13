@@ -1,6 +1,7 @@
 # pyetheroll
 
 [![Build Status](https://travis-ci.com/AndreMiras/pyetheroll.svg?branch=develop)](https://travis-ci.com/AndreMiras/pyetheroll)
+[![Documentation Status](https://readthedocs.org/projects/pyetheroll/badge/?version=latest)](https://pyetheroll.readthedocs.io/en/latest/?badge=latest)
 
 Python library to Etheroll smart contract
 
