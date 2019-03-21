@@ -48,12 +48,13 @@ class TransactionDebugger:
         self.methods_infos = None
 
     @staticmethod
-    def get_contract_abi(chain_id, contract_address):
+    def get_contract_abi(
+            chain_id, contract_address, api_key_path: str = None) -> dict:
         """
         Given a contract address returns the contract ABI from Etherscan,
         refs #2
         """
-        key = get_etherscan_api_key()
+        key = get_etherscan_api_key(api_key_path)
         ChainEtherscanContract = ChainEtherscanContractFactory.create(chain_id)
         api = ChainEtherscanContract(address=contract_address, api_key=key)
         json_abi = api.get_abi()

@@ -39,17 +39,20 @@ class Etheroll:
         ChainID.ROPSTEN: '0xe12c6dEb59f37011d2D9FdeC77A6f1A8f3B8B1e8',
     }
 
-    def __init__(self, chain_id=ChainID.MAINNET, contract_address=None):
+    def __init__(
+            self,
+            api_key_path: str = None,
+            chain_id: ChainID = ChainID.MAINNET,
+            contract_address: str = None):
         if contract_address is None:
             contract_address = self.CONTRACT_ADDRESSES[chain_id]
         self.contract_address = contract_address
         self.chain_id = chain_id
-        self.contract_address = contract_address
         # ethereum_tester = EthereumTester()
         # self.provider = EthereumTesterProvider(ethereum_tester)
         self.provider = HTTPProviderFactory.create(self.chain_id)
         self.web3 = Web3(self.provider)
-        self.etherscan_api_key = get_etherscan_api_key()
+        self.etherscan_api_key = get_etherscan_api_key(api_key_path)
         ChainEtherscanContract = ChainEtherscanContractFactory.create(
             self.chain_id)
         self.ChainEtherscanAccount = ChainEtherscanAccountFactory.create(
