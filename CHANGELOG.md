@@ -5,6 +5,7 @@
 
   - Add readthedocs Sphinx documentation, refs #2
   - Improves setup, refs #3
+  - Condigurable API key
 
 
 ## [20181031]
