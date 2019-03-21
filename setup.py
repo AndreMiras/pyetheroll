@@ -3,7 +3,7 @@ from distutils.core import setup
 install_requires = [
     'eth-account',
     'eth-utils',
-    'py-etherscan-api==0.7.0',
+    'py-etherscan-api==0.8.0',
     'pycryptodome',
     'requests-cache',
     'rlp',
@@ -11,7 +11,8 @@ install_requires = [
 ]
 dependency_links = [
     ('https://github.com/corpetty/py-etherscan-api'
-     '/archive/18ee101.zip#egg=py-etherscan-api-0.7.0'),
+     '/archive/3c68b57.zip#egg=py-etherscan-api-0.8.0'),
+
 ]
 setup(name='pyetheroll',
       version='20181031',

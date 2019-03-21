@@ -1,7 +1,7 @@
 eth-account==0.3.0
-eth-utils==1.2.2
-https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip#egg=py-etherscan-api
+eth-utils==1.4.1
+https://github.com/corpetty/py-etherscan-api/archive/3c68b57.zip#egg=py-etherscan-api
 requests-cache==0.4.13
-rlp==1.0.3
-web3==4.8.1
+rlp==1.1.0
+web3==4.8.3
 m2r==0.2.1

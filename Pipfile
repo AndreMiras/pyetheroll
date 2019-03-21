@@ -13,7 +13,7 @@ pytest = {version="*"}
 eth-account = "*"
 eth-utils = "*"
 pycryptodome = "*"
-py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/18ee101.zip"}
+py-etherscan-api = {file = "https://github.com/corpetty/py-etherscan-api/archive/3c68b57.zip"}
 requests-cache = "*"
 rlp = "*"
 "web3" = "*"
