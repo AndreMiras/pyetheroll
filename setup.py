@@ -24,7 +24,7 @@ def read(fname):
 
 
 setup(name='pyetheroll',
-      version='20181031',
+      version='20190321',
       description='Python library to Etheroll smart contract',
       long_description=read('README.md'),
       long_description_content_type='text/markdown',
