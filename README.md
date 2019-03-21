@@ -1,6 +1,7 @@
 # pyetheroll
 
 [![Build Status](https://travis-ci.com/AndreMiras/pyetheroll.svg?branch=develop)](https://travis-ci.com/AndreMiras/pyetheroll)
+[![PyPI version](https://badge.fury.io/py/pyetheroll.svg)](https://badge.fury.io/py/pyetheroll)
 [![Documentation Status](https://readthedocs.org/projects/pyetheroll/badge/?version=latest)](https://pyetheroll.readthedocs.io/en/latest/?badge=latest)
 
 Python library to Etheroll smart contract
@@ -38,8 +39,7 @@ Find out more in [docs/Examples.md](docs/Examples.md).
 
 [Latest stable release](https://github.com/AndreMiras/pyetheroll/tree/master):
 ```sh
-pip install --process-dependency-links \
-https://github.com/AndreMiras/pyetheroll/archive/master.zip
+pip install pyetheroll
 ```
 
 [Development branch](https://github.com/AndreMiras/pyetheroll/tree/develop):

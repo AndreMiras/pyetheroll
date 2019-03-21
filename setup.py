@@ -1,4 +1,6 @@
-from distutils.core import setup
+import os
+
+from setuptools import setup
 
 install_requires = [
     'eth-account',
@@ -14,9 +16,18 @@ dependency_links = [
      '/archive/3c68b57.zip#egg=py-etherscan-api-0.8.0'),
 
 ]
+
+
+def read(fname):
+    with open(os.path.join(os.path.dirname(__file__), fname)) as f:
+        return f.read()
+
+
 setup(name='pyetheroll',
       version='20181031',
       description='Python library to Etheroll smart contract',
+      long_description=read('README.md'),
+      long_description_content_type='text/markdown',
       author='Andre Miras',
       url='https://github.com/AndreMiras/pyetheroll',
       packages=['pyetheroll'],

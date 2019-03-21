@@ -4,6 +4,7 @@
 ## [Unreleased]
 
   - Add readthedocs Sphinx documentation, refs #2
+  - Improves setup, refs #3
 
 
 ## [20181031]
