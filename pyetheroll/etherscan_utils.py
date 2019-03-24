@@ -23,10 +23,10 @@ def get_etherscan_api_key(api_key_path: str = None) -> str:
     if etherscan_api_key is not None:
         return etherscan_api_key
     elif api_key_path is None:
-            logger.warning(
-                'Cannot get Etherscan API key. '
-                f'No path provided, defaulting to {DEFAULT_API_KEY_TOKEN}.')
-            return DEFAULT_API_KEY_TOKEN
+        logger.warning(
+            'Cannot get Etherscan API key. '
+            f'No path provided, defaulting to {DEFAULT_API_KEY_TOKEN}.')
+        return DEFAULT_API_KEY_TOKEN
     else:
         try:
             with open(api_key_path, mode='r') as key_file:
