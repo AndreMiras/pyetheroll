@@ -2,7 +2,6 @@
 Python Etheroll library.
 """
 import json
-from datetime import datetime
 
 import requests
 import requests_cache
@@ -21,6 +20,7 @@ from pyetheroll.etherscan_utils import (ChainEtherscanAccountFactory,
                                         get_etherscan_api_key)
 from pyetheroll.transaction_debugger import (HTTPProviderFactory,
                                              TransactionDebugger)
+from pyetheroll.utils import timestamp2datetime
 
 REQUESTS_CACHE_PARAMS = {
     'cache_name': 'requests_cache',
@@ -232,7 +232,7 @@ class Etheroll:
             roll_under = int(roll_under, 16)
             block_number = transaction['blockNumber']
             timestamp = transaction['timeStamp']
-            date_time = datetime.utcfromtimestamp(int(timestamp, 16))
+            date_time = timestamp2datetime(timestamp)
             transaction_hash = transaction['hash']
             bet = {
                 'bet_size_ether': bet_size_ether,
@@ -271,7 +271,7 @@ class Etheroll:
             bet_value_ether = round(bet_value / 1e18, ROUND_DIGITS)
             roll_under = call['PlayerNumber']
             timestamp = bet_event['timeStamp']
-            date_time = datetime.utcfromtimestamp(int(timestamp, 16))
+            date_time = timestamp2datetime(timestamp)
             transaction_hash = bet_event['transactionHash']
             bet = {
                 'bet_id': bet_id,
@@ -309,7 +309,7 @@ class Etheroll:
             bet_value = call['Value']
             bet_value_ether = round(bet_value / 1e18, ROUND_DIGITS)
             timestamp = result_event['timeStamp']
-            date_time = datetime.utcfromtimestamp(int(timestamp, 16))
+            date_time = timestamp2datetime(timestamp)
             transaction_hash = result_event['transactionHash']
             bet = {
                 'bet_id': bet_id,

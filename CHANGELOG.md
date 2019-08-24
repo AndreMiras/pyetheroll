@@ -1,5 +1,9 @@
 # Change Log
 
+## Unreleased
+
+  - Fixes timestamp conversion bug, refs #6
+
 
 ## [20190321]
 
