@@ -127,18 +127,20 @@ class Etheroll:
     def events_logs(self, event_list):
         """
         Returns the logs of the given events.
+        Note that usually providers disable this feature from their API.
         """
         events_signatures = self.events_signatures
         topics = []
         for event in event_list:
-            topics.append(events_signatures[event])
+            topic = events_signatures[event].hex()
+            topics.append(topic)
         event_filter = self.web3.eth.filter({
             "fromBlock": "earliest",
             "toBlock": "latest",
             "address": self.contract_address,
             "topics": topics,
         })
-        events_logs = event_filter.get(False)
+        events_logs = event_filter.get_all_entries()
         return events_logs
 
     def player_roll_dice(
