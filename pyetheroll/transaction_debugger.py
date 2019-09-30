@@ -30,8 +30,11 @@ class HTTPProviderFactory:
 
     PROVIDER_URLS = {
         # ChainID.MAINNET: 'https://api.myetherapi.com/eth',
+        # ChainID.MAINNET: 'https://api.infura.io/v1/jsonrpc/mainnet',
+        # ChainID.MAINNET: 'https://api.mycryptoapi.com/eth',
         ChainID.MAINNET: 'https://mainnet.infura.io',
         # ChainID.ROPSTEN: 'https://api.myetherapi.com/rop',
+        # ChainID.ROPSTEN: 'https://api.infura.io/v1/jsonrpc/ropsten',
         ChainID.ROPSTEN: 'https://ropsten.infura.io',
     }
 
