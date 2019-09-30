@@ -1,6 +1,7 @@
 # pyetheroll
 
 [![Build Status](https://travis-ci.com/AndreMiras/pyetheroll.svg?branch=develop)](https://travis-ci.com/AndreMiras/pyetheroll)
+[![Coverage Status](https://coveralls.io/repos/github/AndreMiras/pyetheroll/badge.svg?branch=develop)](https://coveralls.io/github/AndreMiras/pyetheroll?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pyetheroll.svg)](https://badge.fury.io/py/pyetheroll)
 [![Documentation Status](https://readthedocs.org/projects/pyetheroll/badge/?version=latest)](https://pyetheroll.readthedocs.io/en/latest/?badge=latest)
 

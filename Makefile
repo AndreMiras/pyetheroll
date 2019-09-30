@@ -5,6 +5,8 @@ PYTHON=$(VIRTUAL_ENV)/bin/python
 ISORT=$(VIRTUAL_ENV)/bin/isort
 FLAKE8=$(VIRTUAL_ENV)/bin/flake8
 PYTEST=$(VIRTUAL_ENV)/bin/pytest
+# only report coverage for one Python version in tox testing
+COVERALLS=.tox/py$(PYTHON_MAJOR_MINOR)/bin/coveralls
 TWINE=`which twine`
 SOURCES=pyetheroll/ tests/ setup.py setup_meta.py
 # using full path so it can be used outside the root dir
@@ -45,9 +47,10 @@ virtualenv/test: virtualenv
 
 test:
 	$(TOX)
+	@if [ -n "$$CI" ] && [ -f $(COVERALLS) ]; then $(COVERALLS); fi \
 
 pytest: virtualenv/test
-	$(PYTEST) tests/
+	$(PYTEST) --cov pyetheroll/ --cov-report html tests/
 
 lint/isort-check: virtualenv/test
 	$(ISORT) --check-only --recursive --diff $(SOURCES)
