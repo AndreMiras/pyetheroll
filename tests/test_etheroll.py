@@ -1,13 +1,13 @@
 import json
 import os
 import shutil
-import unittest
 from datetime import datetime
 from functools import partial
 from tempfile import mkdtemp
 from unittest import mock
 
 import eth_account
+import pytest
 from eth_account.internal.transactions import assert_valid_fields
 from eth_keyfile import create_keyfile_json
 
@@ -15,7 +15,7 @@ from pyetheroll.constants import ChainID
 from pyetheroll.etheroll import Etheroll
 
 
-class TestEtheroll(unittest.TestCase):
+class TestEtheroll:
 
     log_bet_abi = {
         'inputs': [
@@ -130,10 +130,10 @@ class TestEtheroll(unittest.TestCase):
         },
     ]
 
-    def setUp(self):
+    def setup_method(self, method):
         self.keystore_dir = mkdtemp()
 
-    def tearDown(self):
+    def teardown_method(self, method):
         shutil.rmtree(self.keystore_dir, ignore_errors=True)
 
     def test_init(self):
@@ -147,7 +147,7 @@ class TestEtheroll(unittest.TestCase):
                 'me":"","type":"uint256"}],"payable":false,"stateMutability":"'
                 'view","type":"function"}]')
             etheroll = Etheroll()
-        self.assertIsNotNone(etheroll.contract)
+        assert etheroll.contract is not None
 
     def create_account_helper(self, password):
         """
@@ -192,24 +192,23 @@ class TestEtheroll(unittest.TestCase):
             transaction = etheroll.player_roll_dice(
                 bet_size_ether, chances, wallet_path, wallet_password)
             # the method should return a transaction hash
-            self.assertIsNotNone(transaction)
+            assert transaction is not None
             # and getTransactionCount been called with the normalized address
             normalized_address = account.address
-            self.assertEqual(
-                m_getTransactionCount.call_args_list,
-                [mock.call(normalized_address)]
-            )
+            assert m_getTransactionCount.call_args_list == [
+                mock.call(normalized_address)
+            ]
             # getTransactionCount
             # a second one with custom gas (in gwei), refs #23
             gas_price_gwei = 12
             transaction = etheroll.player_roll_dice(
                 bet_size_ether, chances, wallet_path, wallet_password,
                 gas_price_gwei)
-            self.assertIsNotNone(transaction)
+            assert transaction is not None
         # the nonce was retrieved
-        self.assertTrue(m_getTransactionCount.called)
+        assert m_getTransactionCount.called is True
         # the transaction was sent
-        self.assertTrue(m_sendRawTransaction.called)
+        assert m_sendRawTransaction.called is True
         # the transaction should be built that way
         expected_transaction1 = {
             'nonce': 0, 'chainId': 1,
@@ -226,19 +225,19 @@ class TestEtheroll(unittest.TestCase):
         expected_call2 = mock.call(expected_transaction2, account.privateKey)
         # the method should have been called only once
         expected_calls = [expected_call1, expected_call2]
-        self.assertEqual(m_signTransaction.call_args_list, expected_calls)
+        assert m_signTransaction.call_args_list == expected_calls
         # also make sure the transaction dict is passing the validation
         # e.g. scientific notation 1e+17 is not accepted
         transaction_dict = m_signTransaction.call_args[0][0]
         assert_valid_fields(transaction_dict)
         # even though below values are equal
-        self.assertTrue(transaction_dict['value'] == 0.1 * 1e18 == 1e17)
+        assert transaction_dict['value'] == 0.1 * 1e18 == 1e17
         # this is not accepted by `assert_valid_fields()`
         transaction_dict['value'] = 0.1 * 1e18
-        with self.assertRaises(TypeError):
+        with pytest.raises(TypeError):
             assert_valid_fields(transaction_dict)
         # because float are not accepted
-        self.assertEqual(type(transaction_dict['value']), float)
+        assert type(transaction_dict['value']) is float
 
     def test_get_last_bets_transactions(self):
         """
@@ -316,37 +315,34 @@ class TestEtheroll(unittest.TestCase):
                 address=address, page=page, offset=offset)
         # we should have only two bets returns as the first transaction
         # was not made to the Etheroll contract
-        self.assertEqual(
-            bets,
-            [
-                {
-                    'bet_size_ether': 0.5,
-                    'roll_under': 14,
-                    'block_number': '5394094',
-                    'timestamp': '1523060626',
-                    'datetime': datetime(2018, 4, 7, 0, 23, 46),
-                    'transaction_hash': (
-                        '0x0440f1013a5eafd88f16be6b5612b6e'
-                        '051a4eb1b0b91a160c680295e7fab5bfe'),
-                },
-                {
-                    'bet_size_ether': 0.45,
-                    'roll_under': 2,
-                    'block_number': '5394085',
-                    'timestamp': '1523060494',
-                    'datetime': datetime(2018, 4, 7, 0, 21, 34),
-                    'transaction_hash': (
-                        '0x72def66d60ecc85268c714e71929953'
-                        'ef94fd4fae37632a5f56ea49bee44dd59'),
-                },
-            ]
-        )
+        assert bets == [
+            {
+                'bet_size_ether': 0.5,
+                'roll_under': 14,
+                'block_number': '5394094',
+                'timestamp': '1523060626',
+                'datetime': datetime(2018, 4, 7, 0, 23, 46),
+                'transaction_hash': (
+                    '0x0440f1013a5eafd88f16be6b5612b6e'
+                    '051a4eb1b0b91a160c680295e7fab5bfe'),
+            },
+            {
+                'bet_size_ether': 0.45,
+                'roll_under': 2,
+                'block_number': '5394085',
+                'timestamp': '1523060494',
+                'datetime': datetime(2018, 4, 7, 0, 21, 34),
+                'transaction_hash': (
+                    '0x72def66d60ecc85268c714e71929953'
+                    'ef94fd4fae37632a5f56ea49bee44dd59'),
+            },
+        ]
         # makes sure underlying library was used properly
         expected_call = mock.call(
             internal=False, offset=3, page=1, sort='desc')
         # the method should have been called only once
         expected_calls = [expected_call]
-        self.assertEqual(m_get_transaction_page.call_args_list, expected_calls)
+        assert m_get_transaction_page.call_args_list == expected_calls
 
     def test_get_logs_url(self):
         with \
@@ -362,14 +358,11 @@ class TestEtheroll(unittest.TestCase):
         from_block = 1
         logs_url = etheroll.get_logs_url(
             address=address, from_block=from_block)
-        self.assertEqual(
-            logs_url,
-            (
-                'https://api.etherscan.io/api?'
-                'module=logs&action=getLogs&apikey=apikey'
-                '&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
-                'fromBlock=1&toBlock=latest&'
-            )
+        assert logs_url == (
+            'https://api.etherscan.io/api?'
+            'module=logs&action=getLogs&apikey=apikey'
+            '&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
+            'fromBlock=1&toBlock=latest&'
         )
         # makes sure Testnet is also supported
         with \
@@ -385,14 +378,11 @@ class TestEtheroll(unittest.TestCase):
         from_block = 1
         logs_url = etheroll.get_logs_url(
             address=address, from_block=from_block)
-        self.assertEqual(
-            logs_url,
-            (
-                'https://api-ropsten.etherscan.io/api?'
-                'module=logs&action=getLogs&apikey=apikey&'
-                'address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
-                'fromBlock=1&toBlock=latest&'
-            )
+        assert logs_url == (
+            'https://api-ropsten.etherscan.io/api?'
+            'module=logs&action=getLogs&apikey=apikey&'
+            'address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
+            'fromBlock=1&toBlock=latest&'
         )
 
     def test_get_logs_url_topics(self):
@@ -412,14 +402,11 @@ class TestEtheroll(unittest.TestCase):
         from_block = 1
         logs_url = etheroll.get_logs_url(
             address=address, from_block=from_block)
-        self.assertEqual(
-            logs_url,
-            (
-                'https://api.etherscan.io/api?'
-                'module=logs&action=getLogs&apikey=apikey'
-                '&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
-                'fromBlock=1&toBlock=latest&'
-            )
+        assert logs_url == (
+            'https://api.etherscan.io/api?'
+            'module=logs&action=getLogs&apikey=apikey'
+            '&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
+            'fromBlock=1&toBlock=latest&'
         )
         # makes sure Testnet is also supported
         with \
@@ -447,17 +434,14 @@ class TestEtheroll(unittest.TestCase):
             address=address, from_block=from_block,
             topic0=topic0, topic1=topic1, topic2=topic2, topic3=topic3,
             topic_opr=topic_opr)
-        self.assertEqual(
-            logs_url,
-            (
-                'https://api-ropsten.etherscan.io/api?'
-                'module=logs&action=getLogs&apikey=apikey&'
-                'address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
-                'fromBlock=1&toBlock=latest&'
-                'topic0=topic0&topic1=topic1&topic2=topic2&topic3=topic3&'
-                'topic0_1_opr=and&topic1_2_opr=or&topic2_3_opr=and&'
-                'topic0_2_opr=or&'
-            )
+        assert logs_url == (
+            'https://api-ropsten.etherscan.io/api?'
+            'module=logs&action=getLogs&apikey=apikey&'
+            'address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&'
+            'fromBlock=1&toBlock=latest&'
+            'topic0=topic0&topic1=topic1&topic2=topic2&topic3=topic3&'
+            'topic0_1_opr=and&topic1_2_opr=or&topic2_3_opr=and&'
+            'topic0_2_opr=or&'
         )
 
     def test_get_log_bet_events(self):
@@ -492,7 +476,7 @@ class TestEtheroll(unittest.TestCase):
             '00000000000000000000000046044beaa1e985c67767e04de58181de5daaa00f'
             '&topic0_2_opr=and&')
         expected_calls = [expected_call]
-        self.assertEqual(m_get.call_args_list, expected_calls)
+        assert m_get.call_args_list == expected_calls
 
     def test_get_log_result_events(self):
         """
@@ -528,7 +512,7 @@ class TestEtheroll(unittest.TestCase):
             '&topic0_3_opr=and&'
         )
         expected_calls = [expected_call]
-        self.assertEqual(m_get.call_args_list, expected_calls)
+        assert m_get.call_args_list == expected_calls
 
     def test_get_bets_logs(self):
         """
@@ -620,7 +604,7 @@ class TestEtheroll(unittest.TestCase):
                     '051a4eb1b0b91a160c680295e7fab5bfe'),
             },
         ]
-        self.assertEqual(logs, expected_logs)
+        assert logs == expected_logs
 
     def test_get_bet_results_logs(self):
         """
@@ -719,7 +703,7 @@ class TestEtheroll(unittest.TestCase):
                     '530d0770ade8e2c71488b8eb881ad20e9'),
             },
         ]
-        self.assertEqual(results, expected_results)
+        assert results == expected_results
 
     def test_get_last_bets_blocks(self):
         transactions = [
@@ -786,8 +770,8 @@ class TestEtheroll(unittest.TestCase):
                 as m_get_player_roll_dice_tx:
             m_get_player_roll_dice_tx.return_value = transactions
             last_bets_blocks = etheroll.get_last_bets_blocks(address)
-        self.assertEqual(
-            last_bets_blocks, {'from_block': 5394067, 'to_block': 5394194})
+        assert last_bets_blocks == {
+            'from_block': 5394067, 'to_block': 5394194}
 
     def test_merge_logs(self):
         bet_logs = self.bet_logs
@@ -799,7 +783,7 @@ class TestEtheroll(unittest.TestCase):
             {'bet_log': bet_logs[2], 'bet_result': None},
         ]
         merged_logs = Etheroll.merge_logs(bet_logs, bet_results_logs)
-        self.assertEqual(merged_logs, expected_merged_logs)
+        assert merged_logs == expected_merged_logs
 
     def test_get_merged_logs(self):
         """
@@ -836,7 +820,7 @@ class TestEtheroll(unittest.TestCase):
             # not yet resolved (no `LogResult`)
             {'bet_log': bet_logs[2], 'bet_result': None},
         ]
-        self.assertEqual(merged_logs, expected_merged_logs)
+        assert merged_logs == expected_merged_logs
 
     def test_get_merged_logs_empty_tx(self):
         """
@@ -858,7 +842,7 @@ class TestEtheroll(unittest.TestCase):
                 m_get.return_value.text)
             # the library should not crash but return an empty list
             merged_logs = etheroll.get_merged_logs(address)
-        self.assertEqual(merged_logs, [])
+        assert merged_logs == []
 
     def test_get_merged_logs_no_matching_tx(self):
         """
@@ -890,7 +874,7 @@ class TestEtheroll(unittest.TestCase):
                 m_get.return_value.text)
             merged_logs = etheroll.get_merged_logs(address)
         # merged logs should simply be empty
-        self.assertEqual(merged_logs, [])
+        assert merged_logs == []
 
     def test_get_balance(self):
         """
@@ -925,5 +909,5 @@ class TestEtheroll(unittest.TestCase):
             '&action=balance')
         expected_call = mock.call(expected_url)
         expected_calls = [expected_call]
-        self.assertEqual(m_get.call_args_list, expected_calls)
-        self.assertEqual(balance, 365003.28)
+        assert m_get.call_args_list == expected_calls
+        assert balance == 365003.28

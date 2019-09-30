@@ -1,5 +1,4 @@
 import json
-import unittest
 from unittest import mock
 
 from hexbytes.main import HexBytes
@@ -10,7 +9,7 @@ from pyetheroll.transaction_debugger import (TransactionDebugger,
                                              decode_contract_call)
 
 
-class TestTransactionDebugger(unittest.TestCase):
+class TestTransactionDebugger:
 
     def test_decode_method_log1(self):
         """
@@ -84,9 +83,8 @@ class TestTransactionDebugger(unittest.TestCase):
         transaction_debugger = TransactionDebugger(contract_abi)
         decoded_method = transaction_debugger.decode_method(topics, log_data)
         # TODO: simplify that arg call for unit testing
-        self.assertEqual(
-            decoded_method['call'],
-            {'arg': bytes(
+        assert decoded_method['call'] == {
+            'arg': bytes(
                 '[URL] [\'json(https://api.random.org/json-rpc/1/invoke).resul'
                 't.random["serialNumber","data"]\', \'\\n{"jsonrpc":"2.0","met'
                 'hod":"generateSignedIntegers","params":{"apiKey":${[decrypt] '
@@ -95,21 +93,19 @@ class TestTransactionDebugger(unittest.TestCase):
                 'uxwRoZlCjYO80rWq2WGYoR/LC3WampDuvv2Bo=},"n":1,"min":1,"max":1'
                 '00,"replacement":true,"base":10${[identity] "}"},"id":1${[ide'
                 'ntity] "}"}\']', "utf8"),
-                'cid': (
-                    b'\xb0#\n\xb7\x0bx\xe4pPv`\x89\xea3?/\xf7\xadA\xc6\xf3\x1e'
-                    b'\x8b\xed\x8c*\xcf\xcb\x8e\x91\x18A'),
-                'datasource': b'nested',
-                'gasPrice': 20000000000,
-                'gaslimit': 235000,
-                'proofType': b'\x11',
-                'sender': '0xfe8a5f3a7bb446e1cb4566717691cd3139289ed4',
-                'timestamp': 0}
-        )
-        self.assertEqual(
-          decoded_method['method_info']['definition'],
+            'cid': (
+                b'\xb0#\n\xb7\x0bx\xe4pPv`\x89\xea3?/\xf7\xadA\xc6\xf3\x1e'
+                b'\x8b\xed\x8c*\xcf\xcb\x8e\x91\x18A'),
+            'datasource': b'nested',
+            'gasPrice': 20000000000,
+            'gaslimit': 235000,
+            'proofType': b'\x11',
+            'sender': '0xfe8a5f3a7bb446e1cb4566717691cd3139289ed4',
+            'timestamp': 0
+        }
+        assert decoded_method['method_info']['definition'] == (
           'Log1(address,bytes32,uint256,string,string,uint256,bytes1,uint256)')
-        self.assertEqual(
-          decoded_method['method_info']['sha3'].hex(),
+        assert decoded_method['method_info']['sha3'].hex() == (
           '0xb76d0edd90c6a07aa3ff7a222d7f5933e29c6acc660c059c97837f05c4ca1a84')
 
     def test_decode_method_log_bet(self):
@@ -175,22 +171,20 @@ class TestTransactionDebugger(unittest.TestCase):
             '0000000000000000000000000000000000000000000000000000000000000062')
         transaction_debugger = TransactionDebugger(contract_abi)
         decoded_method = transaction_debugger.decode_method(topics, log_data)
-        self.assertEqual(
-            decoded_method['call'],
-            {'BetID': (
+        assert decoded_method['call'] == {
+            'BetID': (
                 b'\xb0#\n\xb7\x0bx\xe4pPv`\x89\xea3?/\xf7\xadA\xc6\xf3\x1e\x8b'
                 b'\xed\x8c*\xcf\xcb\x8e\x91\x18A'),
-                'BetValue': 100000000000000000,
-                'PlayerAddress':
-                    '0x66d4bacfe61df23be813089a7a6d1a749a5c936a',
-                'PlayerNumber': 98,
-                'ProfitValue': 2061855670103092,
-                'RewardValue': 102061855670103092})
-        self.assertEqual(
-            decoded_method['method_info']['definition'],
+            'BetValue': 100000000000000000,
+            'PlayerAddress':
+                '0x66d4bacfe61df23be813089a7a6d1a749a5c936a',
+            'PlayerNumber': 98,
+            'ProfitValue': 2061855670103092,
+            'RewardValue': 102061855670103092
+        }
+        assert decoded_method['method_info']['definition'] == (
             'LogBet(bytes32,address,uint256,uint256,uint256,uint256)')
-        self.assertEqual(
-          decoded_method['method_info']['sha3'].hex(),
+        assert decoded_method['method_info']['sha3'].hex() == (
           '0x1cb5bfc4e69cbacf65c8e05bdb84d7a327bd6bb4c034ff82359aefd7443775c4')
 
     def test_decode_contract_call(self):
@@ -211,10 +205,9 @@ class TestTransactionDebugger(unittest.TestCase):
             '73ef3d2b0000000000000000000000000000000000000000000000000de0b6b3'
             'a7640000')
         method_name, args = decode_contract_call(contract_abi, call_data)
-        self.assertEqual(method_name, 'transfer')
-        self.assertEqual(
-            args,
-            ('0x67fa2c06c9c6d4332f330e14a66bdf1873ef3d2b', 1000000000000000000)
+        assert method_name == 'transfer'
+        assert args == (
+            '0x67fa2c06c9c6d4332f330e14a66bdf1873ef3d2b', 1000000000000000000
         )
 
     def test_decode_contract_call_callback(self):
@@ -256,14 +249,14 @@ class TestTransactionDebugger(unittest.TestCase):
             '5d3890e415fc0000000000000000000000000000000000000000000000000000'
             '00000000')
         method_name, args = decode_contract_call(contract_abi, call_data)
-        self.assertEqual(method_name, '__callback')
+        assert method_name == '__callback'
         myid = bytes.fromhex(
             '10369b11d06269122229ec4088d4bf42fbf629b0d40432ffc40cc638d938f1e8')
         result = b''
         proof = bytes.fromhex(
             '1220ba7237d9ed277fdd4bf2b358049b1c5e971b2bc5fa0edd47b3345d3890e4'
             '15fc')
-        self.assertEqual(args, (myid, result, proof))
+        assert args == (myid, result, proof)
 
     def m_get_abi(self, instance):
         """
@@ -369,14 +362,12 @@ class TestTransactionDebugger(unittest.TestCase):
             m_getTransactionReceipt.return_value.logs = mocked_logs
             decoded_methods = TransactionDebugger.decode_transaction_logs(
                 chain_id, transaction_hash)
-        self.assertEqual(len(decoded_methods), 2)
+        assert len(decoded_methods) == 2
         decoded_method = decoded_methods[0]
-        self.assertEqual(
-          decoded_method['method_info']['definition'],
+        assert decoded_method['method_info']['definition'] == (
           'Log1(address,bytes32,uint256,string,string,uint256,bytes1,uint256)'
         )
         decoded_method = decoded_methods[1]
-        self.assertEqual(
-            decoded_method['method_info']['definition'],
+        assert decoded_method['method_info']['definition'] == (
             'LogBet(bytes32,address,uint256,uint256,uint256,uint256)'
         )
