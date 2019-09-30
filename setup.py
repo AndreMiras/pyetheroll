@@ -19,13 +19,13 @@ setup_params = {
     'url': 'https://github.com/AndreMiras/pyetheroll',
     'packages': ['pyetheroll'],
     'install_requires': [
-        'eth-account',
+        'eth-account<0.4',
         'eth-utils',
         'py-etherscan-api==0.8.0',
         'pycryptodome',
         'requests-cache',
         'rlp',
-        'web3',
+        'web3<5',
     ],
     'dependency_links': [
         ('https://github.com/corpetty/py-etherscan-api'

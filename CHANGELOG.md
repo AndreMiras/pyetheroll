@@ -2,13 +2,14 @@
 
 ## Unreleased
 
-  - Fixes timestamp conversion bug, refs #6
+  - Introduce `Makefile`, refs #5
+  - Fix timestamp conversion bug, refs #6
 
 
 ## [20190321]
 
   - Add readthedocs Sphinx documentation, refs #2
-  - Improves setup, refs #3
+  - Improve setup, refs #3
   - Condigurable API key
 
 
