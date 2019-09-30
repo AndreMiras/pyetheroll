@@ -10,6 +10,7 @@ import eth_account
 import pytest
 from eth_account.internal.transactions import assert_valid_fields
 from eth_keyfile import create_keyfile_json
+from hexbytes.main import HexBytes
 
 from pyetheroll.constants import ChainID
 from pyetheroll.etheroll import Etheroll
@@ -165,6 +166,65 @@ class TestEtheroll:
         # a bit hacky, but OK for now
         account.path = wallet_path
         return account
+
+    def test_events_logs(self):
+        contract_abi = [self.log_bet_abi]
+        with mock.patch('etherscan.contracts.Contract.get_abi') \
+                as m_get_abi:
+            m_get_abi.return_value = json.dumps(contract_abi)
+            etheroll = Etheroll()
+        event_list = ('LogBet',)
+        expected_events_logs = [
+            {
+                'address': '0xA52e014B3f5Cc48287c2D483A3E026C32cc76E6d',
+                'blockHash': HexBytes(
+                    '0x'
+                    'ccab3e5d9a4ae42331532a12618be5cb'
+                    '682259c46b7c068db96d854a4b49cbc4'),
+                'blockNumber': 8651490,
+                'data': (
+                    '0x'
+                    '00000000000000000000000000000000'
+                    '00000000000000000007401c9431d633'
+                    '00000000000000000000000000000000'
+                    '000000000000000002c68af0bb140000'
+                    '00000000000000000000000000000000'
+                    '00000000000000000000000000000063'
+                    '00000000000000000000000000000000'
+                    '0000000000000000000000000004b8e0'),
+                'logIndex': 90,
+                'removed': False,
+                'topics': [
+                    HexBytes(
+                        '0x'
+                        '56b3f1a6cd856076d6f8adbf8170c43a'
+                        '0b0f532fc5696a2699a0e0cabc704163'),
+                    HexBytes(
+                        '0x'
+                        '5b7f3ee4074f2a1e3b863607f7edd722'
+                        '0bbb15cbf43543e813fa5a88683d4ebe'),
+                    HexBytes(
+                        '0x'
+                        '000000000000000000000000bfcd44f5'
+                        '1a93bebf90cb6048d593542c572c1693'),
+                    HexBytes(
+                        '0x'
+                        '00000000000000000000000000000000'
+                        '000000000000000002cdcb0d4f45d633')
+                ],
+                'transactionHash': HexBytes(
+                    '0x'
+                    'db189e74bb2055748686bb1a1099dcc6'
+                    '51d97b21530debbd7258dcfd55dc95f0'),
+                'transactionIndex': 115,
+                'transactionLogIndex': '0x1',
+                'type': 'mined'
+            }
+        ]
+        with mock.patch('web3.eth.Eth.filter') as m_filter:
+            m_filter().get_all_entries.return_value = expected_events_logs
+            events_logs = etheroll.events_logs(event_list)
+        assert events_logs == expected_events_logs
 
     def test_player_roll_dice(self):
         """
