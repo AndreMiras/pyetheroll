@@ -237,6 +237,7 @@ class TestEtheroll:
             m_get_abi.return_value = json.dumps(contract_abi)
             etheroll = Etheroll()
         bet_size_ether = 0.1
+        bet_size_wei = int(bet_size_ether * 1e18)
         chances = 50
         wallet_password = 'password'
         account = self.create_account_helper(wallet_password)
@@ -250,7 +251,7 @@ class TestEtheroll:
                     ) as m_signTransaction:
             m_getTransactionCount.return_value = 0
             transaction = etheroll.player_roll_dice(
-                bet_size_ether, chances, wallet_path, wallet_password)
+                bet_size_wei, chances, wallet_path, wallet_password)
             # the method should return a transaction hash
             assert transaction is not None
             # and getTransactionCount been called with the normalized address
@@ -261,9 +262,10 @@ class TestEtheroll:
             # getTransactionCount
             # a second one with custom gas (in gwei), refs #23
             gas_price_gwei = 12
+            gas_price_wei = int(gas_price_gwei * 1e9)
             transaction = etheroll.player_roll_dice(
-                bet_size_ether, chances, wallet_path, wallet_password,
-                gas_price_gwei)
+                bet_size_wei, chances, wallet_path, wallet_password,
+                gas_price_wei)
             assert transaction is not None
         # the nonce was retrieved
         assert m_getTransactionCount.called is True
@@ -298,6 +300,55 @@ class TestEtheroll:
             assert_valid_fields(transaction_dict)
         # because float are not accepted
         assert type(transaction_dict['value']) is float
+
+    def test_transaction(self):
+        """
+        Verifies the transaction is properly built and sent.
+        """
+        # simplified contract ABI
+        contract_abi = [self.player_roll_dice_abi]
+        with mock.patch('etherscan.contracts.Contract.get_abi') \
+                as m_get_abi:
+            m_get_abi.return_value = json.dumps(contract_abi)
+            etheroll = Etheroll()
+        to = '0x46044beAa1E985C67767E04dE58181de5DAAA00F'
+        value = 1
+        gas_price_gwei = 12
+        gas_price_wei = int(gas_price_gwei * 1e9)
+        wallet_password = 'password'
+        account = self.create_account_helper(wallet_password)
+        wallet_path = account.path
+        with \
+                mock.patch('web3.eth.Eth.sendRawTransaction') \
+                as m_sendRawTransaction, mock.patch(
+                    'web3.eth.Eth.getTransactionCount'
+                    ) as m_getTransactionCount, mock.patch(
+                        'eth_account.account.Account.signTransaction'
+                    ) as m_signTransaction:
+            m_getTransactionCount.return_value = 0
+            transaction = etheroll.transaction(
+                to, value, wallet_path, wallet_password, gas_price_wei)
+        # the method should return a transaction hash
+        assert transaction is not None
+        # and getTransactionCount been called with the normalized address
+        normalized_address = account.address
+        assert m_getTransactionCount.call_args_list == [
+            mock.call(normalized_address)
+        ]
+        # the nonce was retrieved
+        assert m_getTransactionCount.called is True
+        # the transaction was sent
+        assert m_sendRawTransaction.called is True
+        # the transaction should be built that way
+        expected_transaction1 = {
+            'nonce': 0, 'chainId': 1,
+            'to': to,
+            'gas': 25000,
+            'value': value, 'gasPrice': 12000000000,
+        }
+        expected_call1 = mock.call(expected_transaction1, account.privateKey)
+        expected_calls = [expected_call1]
+        assert m_signTransaction.call_args_list == expected_calls
 
     def test_get_last_bets_transactions(self):
         """

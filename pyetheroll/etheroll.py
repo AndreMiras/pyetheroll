@@ -11,10 +11,9 @@ from eth_utils import to_checksum_address
 from etherscan.client import EmptyResponse
 from hexbytes.main import HexBytes
 from web3 import Web3
-from web3.auto import w3
 from web3.contract import Contract
 
-from pyetheroll.constants import DEFAULT_GAS_PRICE_GWEI, ROUND_DIGITS, ChainID
+from pyetheroll.constants import DEFAULT_GAS_PRICE_WEI, ROUND_DIGITS, ChainID
 from pyetheroll.etherscan_utils import (ChainEtherscanAccountFactory,
                                         ChainEtherscanContractFactory,
                                         get_etherscan_api_key)
@@ -144,19 +143,14 @@ class Etheroll:
         return events_logs
 
     def player_roll_dice(
-            self, bet_size_ether, chances, wallet_path, wallet_password,
-            gas_price_gwei=DEFAULT_GAS_PRICE_GWEI):
+            self, bet_size_wei, chances, wallet_path, wallet_password,
+            gas_price_wei=DEFAULT_GAS_PRICE_WEI):
         """
         Signs and broadcasts `playerRollDice` transaction.
         Returns transaction hash.
         """
         roll_under = chances
-        # `w3.toWei` one has some issues on Android, see:
-        # https://github.com/AndreMiras/EtherollApp/issues/77
-        # value_wei = w3.toWei(bet_size_ether, 'ether')
-        value_wei = int(bet_size_ether * 1e18)
         gas = 310000
-        gas_price = w3.toWei(gas_price_gwei, 'gwei')
         wallet_encrypted = load_keyfile(wallet_path)
         address = wallet_encrypted['address']
         from_address_normalized = to_checksum_address(address)
@@ -164,12 +158,33 @@ class Etheroll:
         transaction = {
             'chainId': self.chain_id.value,
             'gas': gas,
-            'gasPrice': gas_price,
+            'gasPrice': gas_price_wei,
             'nonce': nonce,
-            'value': value_wei,
+            'value': bet_size_wei,
         }
         transaction = self.contract.functions.playerRollDice(
             roll_under).buildTransaction(transaction)
+        private_key = Account.decrypt(wallet_encrypted, wallet_password)
+        signed_tx = self.web3.eth.account.signTransaction(
+            transaction, private_key)
+        tx_hash = self.web3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        return tx_hash
+
+    def transaction(self, to, value, wallet_path, wallet_password,
+                    gas_price_wei=DEFAULT_GAS_PRICE_WEI):
+        gas = 25000
+        wallet_encrypted = load_keyfile(wallet_path)
+        address = wallet_encrypted['address']
+        from_address_normalized = to_checksum_address(address)
+        nonce = self.web3.eth.getTransactionCount(from_address_normalized)
+        transaction = {
+            'chainId': self.chain_id.value,
+            'gas': gas,
+            'gasPrice': gas_price_wei,
+            'nonce': nonce,
+            'value': value,
+            'to': to,
+        }
         private_key = Account.decrypt(wallet_encrypted, wallet_password)
         signed_tx = self.web3.eth.account.signTransaction(
             transaction, private_key)

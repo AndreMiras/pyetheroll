@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+  - Change units to WEI
+  - Add `transaction()` helper
   - Introduce `Makefile`, refs #5
   - Fix timestamp conversion bug, refs #6
   - Setup coverage testing, refs #7
