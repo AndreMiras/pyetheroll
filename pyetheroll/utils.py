@@ -7,9 +7,7 @@ class EtherollUtils:
 
     @staticmethod
     def compute_profit(bet_size, chances_win):
-        """
-        Helper method to compute profit given a bet_size and chances_win.
-        """
+        """Helper method to compute profit given a bet_size and chances_win."""
         if chances_win <= 0 or chances_win >= 100:
             return
         house_edge = 1.0 / 100

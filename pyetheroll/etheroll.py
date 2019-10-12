@@ -75,9 +75,7 @@ class Etheroll:
             self.contract_abi)
 
     def abi_definitions(self, contract_abi, typ):
-        """
-        Returns only ABI definitions of matching type.
-        """
+        """Returns only ABI definitions of matching type."""
         return [a for a in contract_abi if a['type'] == typ]
 
     def definitions(self, contract_abi, typ):
@@ -118,9 +116,7 @@ class Etheroll:
         return self.get_signatures(contract_abi, 'event')
 
     def get_functions_signatures(self, contract_abi=None):
-        """
-        Returns sha3 signature of all functions.
-        """
+        """Returns sha3 signature of all functions."""
         return self.get_signatures(contract_abi, 'function')
 
     def events_logs(self, event_list):
@@ -193,9 +189,7 @@ class Etheroll:
 
     def get_transaction_page(
             self, address=None, page=1, offset=100, internal=False):
-        """
-        Retrieves all transactions related to the given address.
-        """
+        """Retrieves all transactions related to the given address."""
         if address is None:
             address = self.contract_address
         # that one should not be cached, because we want the user to know
@@ -341,9 +335,7 @@ class Etheroll:
         return results
 
     def get_last_bets_blocks(self, address):
-        """
-        Returns a block range containing the "last" bets.
-        """
+        """Returns a block range containing the "last" bets."""
         # retrieves recent `playerRollDice` transactions
         transactions = self.get_player_roll_dice_tx(address)
         if not transactions:
@@ -366,9 +358,7 @@ class Etheroll:
 
     @staticmethod
     def merge_logs(bet_logs, bet_results_logs):
-        """
-        Merges bet logs (LogBet) with bet results logs (LogResult).
-        """
+        """Merges bet logs (LogBet) with bet results logs (LogResult)."""
         merged_logs = []
         # per bet ID dictionary
         bet_results_dict = {}
@@ -407,9 +397,7 @@ class Etheroll:
             self, address, from_block, to_block='latest',
             topic0=None, topic1=None, topic2=None, topic3=None,
             topic_opr=None):
-        """
-        Builds the Etherscan API URL call for the `getLogs` action.
-        """
+        """Builds the Etherscan API URL call for the `getLogs` action."""
         url = self.ChainEtherscanAccount.PREFIX
         url += 'module=logs&action=getLogs&'
         url += 'apikey={}&'.format(self.etherscan_api_key)

@@ -10,9 +10,7 @@ from pyetheroll.etherscan_utils import (ChainEtherscanContractFactory,
 
 
 def decode_contract_call(contract_abi: list, call_data: str):
-    """
-    https://ethereum.stackexchange.com/a/33887/34898
-    """
+    """https://ethereum.stackexchange.com/a/33887/34898"""
     call_data = call_data.lower().replace("0x", "")
     call_data_bin = decode_hex(call_data)
     method_signature = call_data_bin[:4]
@@ -66,9 +64,7 @@ class TransactionDebugger:
 
     @staticmethod
     def get_methods_infos(contract_abi):
-        """
-        List of infos for each events.
-        """
+        """List of infos for each events."""
         methods_infos = {}
         # only retrieves functions and events, other existing types are:
         # "fallback" and "constructor"
@@ -88,9 +84,7 @@ class TransactionDebugger:
         return methods_infos
 
     def decode_method(self, topics, log_data):
-        """
-        Given a topic and log data, decode the event.
-        """
+        """Given a topic and log data, decode the event."""
         topic = topics[0]
         # each indexed field generates a new topics and is excluded from data
         # hence we consider topics[1:] like data, assuming indexed fields
@@ -137,9 +131,7 @@ class TransactionDebugger:
 
     @classmethod
     def decode_transaction_logs(cls, chain_id, transaction_hash):
-        """
-        Given a transaction hash, reads and decode the event log.
-        """
+        """Given a transaction hash, reads and decode the event log."""
         decoded_methods = []
         provider = HTTPProviderFactory.create(chain_id)
         web3 = Web3(provider)

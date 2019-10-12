@@ -227,9 +227,7 @@ class TestEtheroll:
         assert events_logs == expected_events_logs
 
     def test_player_roll_dice(self):
-        """
-        Verifies the transaction is properly built and sent.
-        """
+        """Verifies the transaction is properly built and sent."""
         # simplified contract ABI
         contract_abi = [self.player_roll_dice_abi]
         with mock.patch('etherscan.contracts.Contract.get_abi') \
@@ -302,9 +300,7 @@ class TestEtheroll:
         assert type(transaction_dict['value']) is float
 
     def test_transaction(self):
-        """
-        Verifies the transaction is properly built and sent.
-        """
+        """Verifies the transaction is properly built and sent."""
         # simplified contract ABI
         contract_abi = [self.player_roll_dice_abi]
         with mock.patch('etherscan.contracts.Contract.get_abi') \
@@ -497,9 +493,7 @@ class TestEtheroll:
         )
 
     def test_get_logs_url_topics(self):
-        """
-        More advanced tests for topic support.
-        """
+        """More advanced tests for topic support."""
         with \
                 mock.patch(
                 'etherscan.contracts.Contract.get_abi') as m_get_abi, \

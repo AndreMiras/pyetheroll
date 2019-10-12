@@ -12,9 +12,7 @@ from pyetheroll.transaction_debugger import (TransactionDebugger,
 class TestTransactionDebugger:
 
     def test_decode_method_log1(self):
-        """
-        Trying to decode a `Log1()` event call.
-        """
+        """Trying to decode a `Log1()` event call."""
         # simplified contract ABI for tests
         contract_abi = [
             {'inputs': [], 'type': 'constructor', 'payable': False},
@@ -109,9 +107,7 @@ class TestTransactionDebugger:
           '0xb76d0edd90c6a07aa3ff7a222d7f5933e29c6acc660c059c97837f05c4ca1a84')
 
     def test_decode_method_log_bet(self):
-        """
-        Trying to decode a `LogBet()` event call.
-        """
+        """Trying to decode a `LogBet()` event call."""
         # simplified contract ABI
         contract_abi = [
           {
@@ -259,9 +255,7 @@ class TestTransactionDebugger:
         assert args == (myid, result, proof)
 
     def m_get_abi(self, instance):
-        """
-        Mocked version of `web3.contract.Contract.get_abi()`.
-        """
+        """Mocked version of `web3.contract.Contract.get_abi()`."""
         # retrieves the original contract address
         address = instance.url_dict[instance.ADDRESS]
         abi1 = (

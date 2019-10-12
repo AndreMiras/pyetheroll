@@ -40,16 +40,12 @@ def get_etherscan_api_key(api_key_path: str = None) -> str:
 
 
 class RopstenEtherscanContract(EtherscanContract):
-    """
-    https://github.com/corpetty/py-etherscan-api/issues/24
-    """
+    """https://github.com/corpetty/py-etherscan-api/issues/24"""
     PREFIX = 'https://api-ropsten.etherscan.io/api?'
 
 
 class ChainEtherscanContractFactory:
-    """
-    Creates Contract class type depending on the chain ID.
-    """
+    """Creates Contract class type depending on the chain ID."""
 
     CONTRACTS = {
         ChainID.MAINNET: EtherscanContract,
@@ -63,16 +59,12 @@ class ChainEtherscanContractFactory:
 
 
 class RopstenEtherscanAccount(EtherscanAccount):
-    """
-    https://github.com/corpetty/py-etherscan-api/issues/24
-    """
+    """https://github.com/corpetty/py-etherscan-api/issues/24"""
     PREFIX = 'https://api-ropsten.etherscan.io/api?'
 
 
 class ChainEtherscanAccountFactory:
-    """
-    Creates Account class type depending on the chain ID.
-    """
+    """Creates Account class type depending on the chain ID."""
 
     ACCOUNTS = {
         ChainID.MAINNET: EtherscanAccount,
