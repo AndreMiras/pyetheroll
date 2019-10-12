@@ -4,7 +4,6 @@ from pyetheroll.constants import ROUND_DIGITS
 
 
 class EtherollUtils:
-
     @staticmethod
     def compute_profit(bet_size, chances_win):
         """Helper method to compute profit given a bet_size and chances_win."""
@@ -13,7 +12,7 @@ class EtherollUtils:
         house_edge = 1.0 / 100
         chances_loss = 100 - chances_win
         payout = ((chances_loss / chances_win) * bet_size) + bet_size
-        payout *= (1 - house_edge)
+        payout *= 1 - house_edge
         profit = payout - bet_size
         profit = round(profit, ROUND_DIGITS)
         return profit
@@ -31,7 +30,7 @@ def timestamp2datetime(timestamp: str) -> datetime:
     datetime.datetime(2019, 8, 24, 11, 26, 18)
     """
     base = 10
-    if timestamp.startswith('0x'):
+    if timestamp.startswith("0x"):
         base = 16
     date_time = datetime.utcfromtimestamp(int(timestamp, base))
     return date_time

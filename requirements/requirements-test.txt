@@ -1,3 +1,4 @@
+black
 coveralls
 flake8
 isort

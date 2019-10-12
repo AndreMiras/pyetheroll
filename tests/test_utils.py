@@ -4,7 +4,6 @@ from pyetheroll.utils import EtherollUtils, timestamp2datetime
 
 
 class TestEtherollUtils:
-
     def test_compute_profit(self):
         bet_size = 0.10
         chances_win = 34
@@ -18,11 +17,10 @@ class TestEtherollUtils:
 
 
 class TestUtils:
-
     def test_timestamp2datetime(self):
-        assert timestamp2datetime('1566645978') == (
+        assert timestamp2datetime("1566645978") == (
             datetime(2019, 8, 24, 11, 26, 18)
         )
-        assert timestamp2datetime('0x5d611eda') == (
+        assert timestamp2datetime("0x5d611eda") == (
             datetime(2019, 8, 24, 11, 26, 18)
         )

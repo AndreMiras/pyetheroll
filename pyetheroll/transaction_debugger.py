@@ -5,8 +5,10 @@ from eth_utils import decode_hex, function_abi_to_4byte_selector
 from web3 import HTTPProvider, Web3
 
 from pyetheroll.constants import ChainID
-from pyetheroll.etherscan_utils import (ChainEtherscanContractFactory,
-                                        get_etherscan_api_key)
+from pyetheroll.etherscan_utils import (
+    ChainEtherscanContractFactory,
+    get_etherscan_api_key,
+)
 
 
 def decode_contract_call(contract_abi: list, call_data: str):
@@ -15,13 +17,13 @@ def decode_contract_call(contract_abi: list, call_data: str):
     call_data_bin = decode_hex(call_data)
     method_signature = call_data_bin[:4]
     for description in contract_abi:
-        if description.get('type') != 'function':
+        if description.get("type") != "function":
             continue
         if function_abi_to_4byte_selector(description) == method_signature:
-            method_name = description['name']
-            arg_types = [item['type'] for item in description['inputs']]
+            method_name = description["name"]
+            arg_types = [item["type"] for item in description["inputs"]]
             args = decode_abi(arg_types, call_data_bin[4:])
-            return method_name, args
+            return (method_name, args)
 
 
 class HTTPProviderFactory:
@@ -30,10 +32,10 @@ class HTTPProviderFactory:
         # ChainID.MAINNET: 'https://api.myetherapi.com/eth',
         # ChainID.MAINNET: 'https://api.infura.io/v1/jsonrpc/mainnet',
         # ChainID.MAINNET: 'https://api.mycryptoapi.com/eth',
-        ChainID.MAINNET: 'https://mainnet.infura.io',
+        ChainID.MAINNET: "https://mainnet.infura.io",
         # ChainID.ROPSTEN: 'https://api.myetherapi.com/rop',
         # ChainID.ROPSTEN: 'https://api.infura.io/v1/jsonrpc/ropsten',
-        ChainID.ROPSTEN: 'https://ropsten.infura.io',
+        ChainID.ROPSTEN: "https://ropsten.infura.io",
     }
 
     @classmethod
@@ -43,14 +45,14 @@ class HTTPProviderFactory:
 
 
 class TransactionDebugger:
-
     def __init__(self, contract_abi):
         self.contract_abi = contract_abi
         self.methods_infos = None
 
     @staticmethod
     def get_contract_abi(
-            chain_id, contract_address, api_key_path: str = None) -> dict:
+        chain_id, contract_address, api_key_path: str = None
+    ) -> dict:
         """
         Given a contract address returns the contract ABI from Etherscan,
         refs #2
@@ -68,17 +70,17 @@ class TransactionDebugger:
         methods_infos = {}
         # only retrieves functions and events, other existing types are:
         # "fallback" and "constructor"
-        types = ['function', 'event']
-        methods = [a for a in contract_abi if a['type'] in types]
+        types = ["function", "event"]
+        methods = [a for a in contract_abi if a["type"] in types]
         for description in methods:
-            method_name = description['name']
-            types = ','.join([x['type'] for x in description['inputs']])
+            method_name = description["name"]
+            types = ",".join([x["type"] for x in description["inputs"]])
             event_definition = "%s(%s)" % (method_name, types)
             event_sha3 = Web3.sha3(text=event_definition)
             method_info = {
-                'definition': event_definition,
-                'sha3': event_sha3,
-                'abi': description,
+                "definition": event_definition,
+                "sha3": event_sha3,
+                "abi": description,
             }
             methods_infos.update({method_name: method_info})
         return methods_infos
@@ -97,21 +99,18 @@ class TransactionDebugger:
         if self.methods_infos is None:
             self.methods_infos = self.get_methods_infos(self.contract_abi)
         method_info = None
-        for event, info in self.methods_infos.items():
-            if info['sha3'].lower() == topic.lower():
+        for (event, info) in self.methods_infos.items():
+            if info["sha3"].lower() == topic.lower():
                 method_info = info
-        event_inputs = method_info['abi']['inputs']
-        types = [e_input['type'] for e_input in event_inputs]
+        event_inputs = method_info["abi"]["inputs"]
+        types = [e_input["type"] for e_input in event_inputs]
         # hot patching `bytes` type to replace it with bytes32 since the former
         # is crashing with `InsufficientDataBytes` during `LogResult` decoding.
-        types = ['bytes32' if t == 'bytes' else t for t in types]
-        names = [e_input['name'] for e_input in event_inputs]
+        types = ["bytes32" if t == "bytes" else t for t in types]
+        names = [e_input["name"] for e_input in event_inputs]
         values = decode_abi(types, topics_log_data)
         call = {name: value for name, value in zip(names, values)}
-        decoded_method = {
-            'method_info': method_info,
-            'call': call,
-        }
+        decoded_method = {"method_info": method_info, "call": call}
         return decoded_method
 
     @classmethod
@@ -135,8 +134,7 @@ class TransactionDebugger:
         decoded_methods = []
         provider = HTTPProviderFactory.create(chain_id)
         web3 = Web3(provider)
-        transaction_receipt = web3.eth.getTransactionReceipt(
-            transaction_hash)
+        transaction_receipt = web3.eth.getTransactionReceipt(transaction_hash)
         logs = transaction_receipt.logs
         for log in logs:
             decoded_methods.append(cls.decode_transaction_log(chain_id, log))

@@ -4,6 +4,7 @@ TOX=`which tox`
 PYTHON=$(VIRTUAL_ENV)/bin/python
 ISORT=$(VIRTUAL_ENV)/bin/isort
 FLAKE8=$(VIRTUAL_ENV)/bin/flake8
+BLACK=$(VIRTUAL_ENV)/bin/black
 PYTEST=$(VIRTUAL_ENV)/bin/pytest
 # only report coverage for one Python version in tox testing
 COVERALLS=.tox/py$(PYTHON_MAJOR_MINOR)/bin/coveralls
@@ -58,10 +59,16 @@ lint/isort-check: virtualenv/test
 lint/isort-fix: virtualenv/test
 	$(ISORT) --recursive $(SOURCES)
 
+lint/black-fix: virtualenv/test
+	$(BLACK) --verbose $(SOURCES)
+
 lint/flake8: virtualenv/test
 	$(FLAKE8) $(SOURCES)
 
-lint: lint/isort-check lint/flake8
+lint/black-check: virtualenv/test
+	$(BLACK) --check $(SOURCES)
+
+lint: lint/isort-check lint/flake8 lint/black-check
 
 docs/clean:
 	rm -rf $(DOCS_DIR)/build/
