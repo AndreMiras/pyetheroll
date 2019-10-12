@@ -103,7 +103,7 @@ class TestTransactionDebugger:
         decoded_method = transaction_debugger.decode_method(topics, log_data)
         # TODO: simplify that arg call for unit testing
         assert decoded_method["call"] == {
-            "arg": bytes(
+            "arg": (
                 "[URL] ['json(https://api.random.org/json-rpc/1/invoke).resul"
                 't.random["serialNumber","data"]\', \'\\n{"jsonrpc":"2.0","met'
                 'hod":"generateSignedIntegers","params":{"apiKey":${[decrypt] '
@@ -111,14 +111,13 @@ class TestTransactionDebugger:
                 "+slR9SgZyqDtjVOV5Yzg12iUkbubp0DpcjCEdeJTHnGwC6gD729GUVoGvo96h"
                 'uxwRoZlCjYO80rWq2WGYoR/LC3WampDuvv2Bo=},"n":1,"min":1,"max":1'
                 '00,"replacement":true,"base":10${[identity] "}"},"id":1${[ide'
-                'ntity] "}"}\']',
-                "utf8",
+                'ntity] "}"}\']'
             ),
             "cid": (
                 b"\xb0#\n\xb7\x0bx\xe4pPv`\x89\xea3?/\xf7\xadA\xc6\xf3\x1e"
                 b"\x8b\xed\x8c*\xcf\xcb\x8e\x91\x18A"
             ),
-            "datasource": b"nested",
+            "datasource": "nested",
             "gasPrice": 20000000000,
             "gaslimit": 235000,
             "proofType": b"\x11",
@@ -339,7 +338,7 @@ class TestTransactionDebugger:
         myid = bytes.fromhex(
             "10369b11d06269122229ec4088d4bf42fbf629b0d40432ffc40cc638d938f1e8"
         )
-        result = b""
+        result = ""
         proof = bytes.fromhex(
             "1220ba7237d9ed277fdd4bf2b358049b1c5e971b2bc5fa0edd47b3345d3890e4"
             "15fc"

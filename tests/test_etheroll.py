@@ -8,7 +8,7 @@ from unittest import mock
 
 import eth_account
 import pytest
-from eth_account.internal.transactions import assert_valid_fields
+from eth_account._utils.transactions import assert_valid_fields
 from eth_keyfile import create_keyfile_json
 from hexbytes.main import HexBytes
 

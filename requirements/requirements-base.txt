@@ -1,7 +1,7 @@
-eth-account<0.4
+eth-account<0.5
 eth-utils
 https://github.com/corpetty/py-etherscan-api/archive/3c68b57.tar.gz#egg=py-etherscan-api
 pycryptodome
 requests-cache
 rlp
-web3<5
+web3<6
