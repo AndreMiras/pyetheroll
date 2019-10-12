@@ -38,6 +38,11 @@ Twine check and upload:
 twine check dist/*
 twine upload dist/*
 ```
+Also publish the alias meta package `setup_meta.py`.
+
+## Check Read the Docs
+
+Make sure <https://readthedocs.org/projects/pyetheroll/> is up to date.
 
 ## GitHub
 

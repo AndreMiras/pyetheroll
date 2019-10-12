@@ -1,11 +1,9 @@
-import unittest
 from unittest import mock
 
 from pyetheroll.etherscan_utils import get_etherscan_api_key
 
 
-class TestEtherscanlUtils(unittest.TestCase):
-
+class TestEtherscanlUtils:
     def test_get_etherscan_api_key(self):
         """
         Verifies the key can be retrieved from either:
@@ -13,30 +11,35 @@ class TestEtherscanlUtils(unittest.TestCase):
         2) file
         3) or fallbacks on default key
         """
-        expected_key = '0102030405060708091011121314151617'
+        expected_key = "0102030405060708091011121314151617"
         # 1) environment
         with mock.patch.dict(
-                'os.environ', {'ETHERSCAN_API_KEY': expected_key}):
+            "os.environ", {"ETHERSCAN_API_KEY": expected_key}
+        ):
             actual_key = get_etherscan_api_key()
-        self.assertEqual(actual_key, expected_key)
+        assert actual_key == expected_key
         # 2) file
         read_data = '{ "key" : "%s" }' % (expected_key)
-        api_key_path = 'api_key.json'
-        with mock.patch('builtins.open', mock.mock_open(read_data=read_data)) \
-                as m_open:
+        api_key_path = "api_key.json"
+        with mock.patch(
+            "builtins.open", mock.mock_open(read_data=read_data)
+        ) as m_open:
             actual_key = get_etherscan_api_key(api_key_path=api_key_path)
-        self.assertEqual(expected_key, actual_key)
+        assert expected_key == actual_key
         # verifies the file was read
-        self.assertEqual(
-            m_open.call_args_list, [mock.call(api_key_path, mode='r')])
+        assert m_open.call_args_list == [mock.call(api_key_path, mode="r")]
         # 3) or fallbacks on default key
-        with mock.patch('builtins.open') as m_open, \
-                mock.patch('pyetheroll.etherscan_utils.logger') as m_logger:
+        with mock.patch("builtins.open") as m_open, mock.patch(
+            "pyetheroll.etherscan_utils.logger"
+        ) as m_logger:
             m_open.side_effect = FileNotFoundError
             actual_key = get_etherscan_api_key(api_key_path)
-        self.assertEqual('YourApiKeyToken', actual_key)
+        assert "YourApiKeyToken" == actual_key
         # verifies the fallback warning was logged
-        self.assertEqual(m_logger.warning.call_args_list, [mock.call(
-            'Cannot get Etherscan API key. '
-            'File api_key.json not found, '
-            'defaulting to YourApiKeyToken.')])
+        assert m_logger.warning.call_args_list == [
+            mock.call(
+                "Cannot get Etherscan API key. "
+                "File api_key.json not found, "
+                "defaulting to YourApiKeyToken."
+            )
+        ]

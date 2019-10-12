@@ -1,6 +1,7 @@
 # pyetheroll
 
 [![Build Status](https://travis-ci.com/AndreMiras/pyetheroll.svg?branch=develop)](https://travis-ci.com/AndreMiras/pyetheroll)
+[![Coverage Status](https://coveralls.io/repos/github/AndreMiras/pyetheroll/badge.svg?branch=develop)](https://coveralls.io/github/AndreMiras/pyetheroll?branch=develop)
 [![PyPI version](https://badge.fury.io/py/pyetheroll.svg)](https://badge.fury.io/py/pyetheroll)
 [![Documentation Status](https://readthedocs.org/projects/pyetheroll/badge/?version=latest)](https://pyetheroll.readthedocs.io/en/latest/?badge=latest)
 
@@ -15,12 +16,13 @@ from pyetheroll.etheroll import Etheroll
 
 etheroll = Etheroll()
 bet_size_ether = 0.1
+bet_size_wei = int(bet_size_ether * 1e18)
 chances = 50
 wallet_path = 'wallet.json'
 wallet_password = 'password'
 
 transaction = etheroll.player_roll_dice(
-    bet_size_ether, chances, wallet_path, wallet_password)
+    bet_size_wei, chances, wallet_path, wallet_password)
 ```
 
 It's also possible to set different contract address and chain ID:
