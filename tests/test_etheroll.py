@@ -174,7 +174,7 @@ class TestEtheroll:
         eth_account.account.create_keyfile_json = partial(
             create_keyfile_json, iterations=1
         )
-        encrypted = eth_account.Account.encrypt(account.privateKey, password)
+        encrypted = eth_account.Account.encrypt(account.key, password)
         with open(wallet_path, "w") as f:
             f.write(json.dumps(encrypted))
         # a bit hacky, but OK for now
@@ -308,8 +308,8 @@ class TestEtheroll:
         }
         expected_transaction2 = expected_transaction1.copy()
         expected_transaction2["gasPrice"] = 12 * 1e9
-        expected_call1 = mock.call(expected_transaction1, account.privateKey)
-        expected_call2 = mock.call(expected_transaction2, account.privateKey)
+        expected_call1 = mock.call(expected_transaction1, account.key)
+        expected_call2 = mock.call(expected_transaction2, account.key)
         # the method should have been called only once
         expected_calls = [expected_call1, expected_call2]
         assert m_signTransaction.call_args_list == expected_calls
@@ -371,7 +371,7 @@ class TestEtheroll:
             "value": value,
             "gasPrice": 12000000000,
         }
-        expected_call1 = mock.call(expected_transaction1, account.privateKey)
+        expected_call1 = mock.call(expected_transaction1, account.key)
         expected_calls = [expected_call1]
         assert m_signTransaction.call_args_list == expected_calls
 
