@@ -4,7 +4,8 @@
 
   - Change units to WEI
   - Add `transaction()` helper
-  - Introduce `Makefile`, refs #5
+  - Add Python3.7 support
+  - Introduce `Makefile`, refs #4 and #5
   - Fix timestamp conversion bug, refs #6
   - Setup coverage testing, refs #7
   - Migrate to web3 v5, refs #8
