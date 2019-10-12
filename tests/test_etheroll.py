@@ -2,14 +2,12 @@ import json
 import os
 import shutil
 from datetime import datetime
-from functools import partial
 from tempfile import mkdtemp
 from unittest import mock
 
 import eth_account
 import pytest
-from eth_account.internal.transactions import assert_valid_fields
-from eth_keyfile import create_keyfile_json
+from eth_account._utils.transactions import assert_valid_fields
 from hexbytes.main import HexBytes
 
 from pyetheroll.constants import ChainID
@@ -169,12 +167,9 @@ class TestEtheroll:
         """
         wallet_path = os.path.join(self.keystore_dir, "wallet.json")
         account = eth_account.Account.create()
-        # monkey patching to set iterations to the minimum, refs:
-        # https://github.com/ethereum/eth-account/issues/48
-        eth_account.account.create_keyfile_json = partial(
-            create_keyfile_json, iterations=1
+        encrypted = eth_account.Account.encrypt(
+            account.key, password, iterations=1
         )
-        encrypted = eth_account.Account.encrypt(account.privateKey, password)
         with open(wallet_path, "w") as f:
             f.write(json.dumps(encrypted))
         # a bit hacky, but OK for now
@@ -308,8 +303,8 @@ class TestEtheroll:
         }
         expected_transaction2 = expected_transaction1.copy()
         expected_transaction2["gasPrice"] = 12 * 1e9
-        expected_call1 = mock.call(expected_transaction1, account.privateKey)
-        expected_call2 = mock.call(expected_transaction2, account.privateKey)
+        expected_call1 = mock.call(expected_transaction1, account.key)
+        expected_call2 = mock.call(expected_transaction2, account.key)
         # the method should have been called only once
         expected_calls = [expected_call1, expected_call2]
         assert m_signTransaction.call_args_list == expected_calls
@@ -371,7 +366,7 @@ class TestEtheroll:
             "value": value,
             "gasPrice": 12000000000,
         }
-        expected_call1 = mock.call(expected_transaction1, account.privateKey)
+        expected_call1 = mock.call(expected_transaction1, account.key)
         expected_calls = [expected_call1]
         assert m_signTransaction.call_args_list == expected_calls
 
