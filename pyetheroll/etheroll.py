@@ -115,7 +115,7 @@ class Etheroll:
         definitions = self.definitions(contract_abi, typ)
         for name in definitions:
             definition = definitions[name]
-            signature = Web3.sha3(text=definition)
+            signature = Web3.keccak(text=definition)
             signatures.update({name: signature})
         return signatures
 

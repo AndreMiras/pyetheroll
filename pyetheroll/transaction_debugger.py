@@ -76,7 +76,7 @@ class TransactionDebugger:
             method_name = description["name"]
             types = ",".join([x["type"] for x in description["inputs"]])
             event_definition = "%s(%s)" % (method_name, types)
-            event_sha3 = Web3.sha3(text=event_definition)
+            event_sha3 = Web3.keccak(text=event_definition)
             method_info = {
                 "definition": event_definition,
                 "sha3": event_sha3,
