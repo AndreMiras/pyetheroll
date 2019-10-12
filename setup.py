@@ -11,7 +11,7 @@ def read(fname):
 # exposing the params so it can be imported
 setup_params = {
     "name": "pyetheroll",
-    "version": "20190321",
+    "version": "20191018",
     "description": "Python library to Etheroll smart contract",
     "long_description": read("README.md"),
     "long_description_content_type": "text/markdown",
@@ -19,13 +19,13 @@ setup_params = {
     "url": "https://github.com/AndreMiras/pyetheroll",
     "packages": ["pyetheroll"],
     "install_requires": [
-        "eth-account<0.4",
+        "eth-account<0.5",
         "eth-utils",
         "py-etherscan-api==0.8.0",
         "pycryptodome",
         "requests-cache",
         "rlp",
-        "web3<5",
+        "web3<6",
     ],
     "dependency_links": [
         (

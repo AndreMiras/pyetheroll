@@ -1,6 +1,6 @@
 # Change Log
 
-## Unreleased
+## [20191018]
 
   - Change units to WEI
   - Add `transaction()` helper
