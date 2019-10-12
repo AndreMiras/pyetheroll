@@ -2,14 +2,12 @@ import json
 import os
 import shutil
 from datetime import datetime
-from functools import partial
 from tempfile import mkdtemp
 from unittest import mock
 
 import eth_account
 import pytest
 from eth_account._utils.transactions import assert_valid_fields
-from eth_keyfile import create_keyfile_json
 from hexbytes.main import HexBytes
 
 from pyetheroll.constants import ChainID
@@ -169,12 +167,9 @@ class TestEtheroll:
         """
         wallet_path = os.path.join(self.keystore_dir, "wallet.json")
         account = eth_account.Account.create()
-        # monkey patching to set iterations to the minimum, refs:
-        # https://github.com/ethereum/eth-account/issues/48
-        eth_account.account.create_keyfile_json = partial(
-            create_keyfile_json, iterations=1
+        encrypted = eth_account.Account.encrypt(
+            account.key, password, iterations=1
         )
-        encrypted = eth_account.Account.encrypt(account.key, password)
         with open(wallet_path, "w") as f:
             f.write(json.dumps(encrypted))
         # a bit hacky, but OK for now
