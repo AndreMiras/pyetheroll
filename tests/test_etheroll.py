@@ -14,6 +14,11 @@ from pyetheroll.constants import ChainID
 from pyetheroll.etheroll import Etheroll, merge_logs
 
 
+def patch_get_abi(abi_str):
+    return mock.patch(
+        "etherscan.contracts.Contract.get_abi", return_value=abi_str)
+
+
 class TestEtheroll:
 
     log_bet_abi = {
@@ -152,12 +157,12 @@ class TestEtheroll:
         """
         Verifies object initializes properly and contract methods are callable.
         """
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = (
-                '[{"constant":true,"inputs":[],"name":"minBet","outputs":[{"na'
-                'me":"","type":"uint256"}],"payable":false,"stateMutability":"'
-                'view","type":"function"}]'
-            )
+        abi_str = (
+            '[{"constant":true,"inputs":[],"name":"minBet","outputs":[{"na'
+            'me":"","type":"uint256"}],"payable":false,"stateMutability":"'
+            'view","type":"function"}]'
+        )
+        with patch_get_abi(abi_str):
             etheroll = Etheroll()
         assert etheroll.contract is not None
 
@@ -178,8 +183,7 @@ class TestEtheroll:
 
     def test_events_logs(self):
         contract_abi = [self.log_bet_abi]
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll()
         event_list = ("LogBet",)
         expected_events_logs = [
@@ -245,8 +249,7 @@ class TestEtheroll:
         """Verifies the transaction is properly built and sent."""
         # simplified contract ABI
         contract_abi = [self.player_roll_dice_abi]
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll()
         bet_size_ether = 0.1
         bet_size_wei = int(bet_size_ether * 1e18)
@@ -325,8 +328,7 @@ class TestEtheroll:
         """Verifies the transaction is properly built and sent."""
         # simplified contract ABI
         contract_abi = [self.player_roll_dice_abi]
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll()
         to = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
         value = 1
@@ -380,8 +382,7 @@ class TestEtheroll:
         # we want this unit test to still pass even if the Etheroll contract
         # address changes, so let's make it explicit
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
 
         # simplified version of `get_transaction_page()` return
@@ -489,10 +490,7 @@ class TestEtheroll:
         assert m_get_transaction_page.call_args_list == expected_calls
 
     def test_get_logs_url(self):
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = "[]"
+        with patch_get_abi("[]"):
             etheroll = Etheroll()
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -506,10 +504,7 @@ class TestEtheroll:
             "fromBlock=1&toBlock=latest&"
         )
         # makes sure Testnet is also supported
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = "[]"
+        with patch_get_abi("[]"):
             etheroll = Etheroll(chain_id=ChainID.ROPSTEN)
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -525,10 +520,7 @@ class TestEtheroll:
 
     def test_get_logs_url_topics(self):
         """More advanced tests for topic support."""
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = "[]"
+        with patch_get_abi("[]"):
             etheroll = Etheroll()
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -542,10 +534,7 @@ class TestEtheroll:
             "fromBlock=1&toBlock=latest&"
         )
         # makes sure Testnet is also supported
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = "[]"
+        with patch_get_abi("[]"):
             etheroll = Etheroll(chain_id=ChainID.ROPSTEN)
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -585,10 +574,7 @@ class TestEtheroll:
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         # simplified contract ABI
         contract_abi = [self.log_bet_abi]
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         player_address = "0x46044beaa1e985c67767e04de58181de5daaa00f"
         from_block = 5394085
@@ -615,10 +601,7 @@ class TestEtheroll:
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         # simplified contract ABI
         contract_abi = [self.log_result_abi]
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         player_address = "0x46044beaa1e985c67767e04de58181de5daaa00f"
         from_block = 5394085
@@ -712,8 +695,7 @@ class TestEtheroll:
                 ),
             },
         ]
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll()
         address = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
         from_block = 5394067
@@ -846,8 +828,7 @@ class TestEtheroll:
                 ),
             },
         ]
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll()
         address = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
         from_block = 5394067
@@ -957,8 +938,7 @@ class TestEtheroll:
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         contract_abi = []
         address = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         with mock.patch(
             "pyetheroll.etheroll.Etheroll.get_player_roll_dice_tx"
@@ -994,8 +974,7 @@ class TestEtheroll:
         last_bets_blocks = {"from_block": 5394067, "to_block": 5394194}
         bet_logs = self.bet_logs
         bet_results_logs = self.bet_results_logs
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         address = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
         with mock.patch(
@@ -1024,8 +1003,7 @@ class TestEtheroll:
         """
         contract_abi = [self.player_roll_dice_abi]
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         address = "0x7aBE7DdD94DB8feb6BE426e53cA090b94F15d73E"
         with mock.patch("requests.sessions.Session.get") as m_get:
@@ -1048,8 +1026,7 @@ class TestEtheroll:
         """
         contract_abi = [self.player_roll_dice_abi]
         contract_address = "0xe12c6dEb59f37011d2D9FdeC77A6f1A8f3B8B1e8"
-        with mock.patch("etherscan.contracts.Contract.get_abi") as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(
                 chain_id=ChainID.ROPSTEN, contract_address=contract_address
             )
@@ -1083,10 +1060,7 @@ class TestEtheroll:
         """
         contract_abi = []
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
-        with mock.patch(
-            "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi:
-            m_get_abi.return_value = json.dumps(contract_abi)
+        with patch_get_abi(json.dumps(contract_abi)):
             etheroll = Etheroll(contract_address=contract_address)
         address = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
         with mock.patch("requests.sessions.Session.get") as m_get:
