@@ -13,9 +13,10 @@ def decode_contract_call(contract_abi: list, call_data: str):
     call_data = call_data.lower().replace("0x", "")
     call_data_bin = decode_hex(call_data)
     method_signature = call_data_bin[:4]
-    for description in contract_abi:
-        if description.get("type") != "function":
-            continue
+    function_descriptions = filter(
+        lambda x: x.get("type") == "function", contract_abi
+    )
+    for description in function_descriptions:
         if function_abi_to_4byte_selector(description) == method_signature:
             method_name = description["name"]
             arg_types = [item["type"] for item in description["inputs"]]

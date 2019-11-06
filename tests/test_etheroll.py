@@ -8,6 +8,7 @@ from unittest import mock
 import eth_account
 import pytest
 from eth_account._utils.transactions import assert_valid_fields
+from etherscan.accounts import Account as EtherscanAccount
 from hexbytes.main import HexBytes
 
 from pyetheroll.constants import ChainID
@@ -16,7 +17,22 @@ from pyetheroll.etheroll import Etheroll, merge_logs
 
 def patch_get_abi(abi_str):
     return mock.patch(
-        "etherscan.contracts.Contract.get_abi", return_value=abi_str)
+        "etherscan.contracts.Contract.get_abi", return_value=abi_str
+    )
+
+
+def patch_get_transaction_page(transactions=None):
+    return mock.patch(
+        "etherscan.accounts.Account.get_transaction_page",
+        return_value=transactions,
+    )
+
+
+def patch_chain_etherscan_account_factory_create(return_value):
+    return mock.patch(
+        "pyetheroll.etheroll.ChainEtherscanAccountFactory.create",
+        return_value=return_value,
+    )
 
 
 class TestEtheroll:
@@ -448,10 +464,9 @@ class TestEtheroll:
         address = "0x46044beaa1e985c67767e04de58181de5daaa00f"
         page = 1
         offset = 3
-        with mock.patch(
-            "etherscan.accounts.Account.get_transaction_page"
+        with patch_get_transaction_page(
+            transactions
         ) as m_get_transaction_page:
-            m_get_transaction_page.return_value = transactions
             bets = etheroll.get_last_bets_transactions(
                 address=address, page=page, offset=offset
             )
@@ -1086,3 +1101,33 @@ class TestEtheroll:
         expected_calls = [expected_call]
         assert m_get.call_args_list == expected_calls
         assert balance == 365003.28
+
+    def test_get_transaction_page(self):
+        """Should use the address passed in parameter or the contract one."""
+        contract_abi = []
+        address = "0x46044beAa1E985C67767E04dE58181de5DAAA00F"
+        contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
+        expected_transactions = mock.sentinel
+        m_ChainEtherscanAccount = mock.Mock(spec=EtherscanAccount)
+        m_ChainEtherscanAccount.return_value.get_transaction_page = mock.Mock(
+            return_value=expected_transactions
+        )
+        with patch_get_abi(
+            json.dumps(contract_abi)
+        ), patch_chain_etherscan_account_factory_create(
+            m_ChainEtherscanAccount
+        ):
+            etheroll = Etheroll(contract_address=contract_address)
+        # pulls from address passed in parameters
+        transactions = etheroll.get_transaction_page(address=address)
+        assert m_ChainEtherscanAccount.call_args_list == [
+            mock.call(address=address, api_key="YourApiKeyToken")
+        ]
+        assert transactions == expected_transactions
+        m_ChainEtherscanAccount.reset_mock()
+        # or defaults to contract address
+        transactions = etheroll.get_transaction_page()
+        assert m_ChainEtherscanAccount.call_args_list == [
+            mock.call(address=contract_address, api_key="YourApiKeyToken")
+        ]
+        assert transactions == expected_transactions
