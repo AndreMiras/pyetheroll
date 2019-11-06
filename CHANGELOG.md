@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+  - API key refactoring
+
+
 ## [20191018]
 
   - Change units to WEI

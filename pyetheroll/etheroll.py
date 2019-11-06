@@ -13,11 +13,15 @@ from hexbytes.main import HexBytes
 from web3 import Web3
 from web3.contract import Contract
 
-from pyetheroll.constants import DEFAULT_GAS_PRICE_WEI, ROUND_DIGITS, ChainID
+from pyetheroll.constants import (
+    DEFAULT_API_KEY_TOKEN,
+    DEFAULT_GAS_PRICE_WEI,
+    ROUND_DIGITS,
+    ChainID,
+)
 from pyetheroll.etherscan_utils import (
     ChainEtherscanAccountFactory,
     ChainEtherscanContractFactory,
-    get_etherscan_api_key,
 )
 from pyetheroll.transaction_debugger import (
     HTTPProviderFactory,
@@ -35,6 +39,27 @@ REQUESTS_CACHE_PARAMS = {
 }
 
 
+def abi_definitions(contract_abi, typ):
+    """Returns only ABI definitions of matching type."""
+    return [a for a in contract_abi if a["type"] == typ]
+
+
+def merge_logs(bet_logs, bet_results_logs):
+    """Merges bet logs (LogBet) with bet results logs (LogResult)."""
+    merged_logs = []
+    # per bet ID dictionary
+    bet_results_dict = {}
+    for bet_result in bet_results_logs:
+        bet_id = bet_result["bet_id"]
+        bet_results_dict.update({bet_id: bet_result})
+    for bet_log in bet_logs:
+        bet_id = bet_log["bet_id"]
+        bet_result = bet_results_dict.get(bet_id)
+        merged_log = {"bet_log": bet_log, "bet_result": bet_result}
+        merged_logs.append(merged_log)
+    return merged_logs
+
+
 class Etheroll:
 
     CONTRACT_ADDRESSES = {
@@ -44,7 +69,7 @@ class Etheroll:
 
     def __init__(
         self,
-        api_key_path: str = None,
+        api_key: str = DEFAULT_API_KEY_TOKEN,
         chain_id: ChainID = ChainID.MAINNET,
         contract_address: str = None,
     ):
@@ -56,7 +81,7 @@ class Etheroll:
         # self.provider = EthereumTesterProvider(ethereum_tester)
         self.provider = HTTPProviderFactory.create(self.chain_id)
         self.web3 = Web3(self.provider)
-        self.etherscan_api_key = get_etherscan_api_key(api_key_path)
+        self.etherscan_api_key = api_key
         ChainEtherscanContract = ChainEtherscanContractFactory.create(
             self.chain_id
         )
@@ -86,10 +111,6 @@ class Etheroll:
             self.contract_abi
         )
 
-    def abi_definitions(self, contract_abi, typ):
-        """Returns only ABI definitions of matching type."""
-        return [a for a in contract_abi if a["type"] == typ]
-
     def definitions(self, contract_abi, typ):
         """
         Returns all events definitions (built from ABI definition).
@@ -97,8 +118,7 @@ class Etheroll:
         >>> {"LogRefund": "LogRefund(bytes32,address,uint256)"}
         """
         events_definitions = {}
-        abi_definitions = self.abi_definitions(contract_abi, typ)
-        for abi_definition in abi_definitions:
+        for abi_definition in abi_definitions(contract_abi, typ):
             name = abi_definition["name"]
             types = ",".join([x["type"] for x in abi_definition["inputs"]])
             definition = "%s(%s)" % (name, types)
@@ -389,22 +409,6 @@ class Etheroll:
         ret = {"from_block": from_block, "to_block": to_block}
         return ret
 
-    @staticmethod
-    def merge_logs(bet_logs, bet_results_logs):
-        """Merges bet logs (LogBet) with bet results logs (LogResult)."""
-        merged_logs = []
-        # per bet ID dictionary
-        bet_results_dict = {}
-        for bet_result in bet_results_logs:
-            bet_id = bet_result["bet_id"]
-            bet_results_dict.update({bet_id: bet_result})
-        for bet_log in bet_logs:
-            bet_id = bet_log["bet_id"]
-            bet_result = bet_results_dict.get(bet_id)
-            merged_log = {"bet_log": bet_log, "bet_result": bet_result}
-            merged_logs.append(merged_log)
-        return merged_logs
-
     def get_merged_logs(self, address):
         """
         Returns the merged logs.
@@ -419,7 +423,7 @@ class Etheroll:
         bet_results_logs = self.get_bet_results_logs(
             address, from_block, to_block
         )
-        merged_logs = self.merge_logs(bet_logs, bet_results_logs)
+        merged_logs = merge_logs(bet_logs, bet_results_logs)
         return merged_logs
 
     def get_logs_url(

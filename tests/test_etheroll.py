@@ -11,7 +11,7 @@ from eth_account._utils.transactions import assert_valid_fields
 from hexbytes.main import HexBytes
 
 from pyetheroll.constants import ChainID
-from pyetheroll.etheroll import Etheroll
+from pyetheroll.etheroll import Etheroll, merge_logs
 
 
 class TestEtheroll:
@@ -491,11 +491,8 @@ class TestEtheroll:
     def test_get_logs_url(self):
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = "[]"
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll()
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -504,18 +501,15 @@ class TestEtheroll:
         )
         assert logs_url == (
             "https://api.etherscan.io/api?"
-            "module=logs&action=getLogs&apikey=apikey"
+            "module=logs&action=getLogs&apikey=YourApiKeyToken"
             "&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&"
             "fromBlock=1&toBlock=latest&"
         )
         # makes sure Testnet is also supported
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = "[]"
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll(chain_id=ChainID.ROPSTEN)
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -524,7 +518,7 @@ class TestEtheroll:
         )
         assert logs_url == (
             "https://api-ropsten.etherscan.io/api?"
-            "module=logs&action=getLogs&apikey=apikey&"
+            "module=logs&action=getLogs&apikey=YourApiKeyToken&"
             "address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&"
             "fromBlock=1&toBlock=latest&"
         )
@@ -533,11 +527,8 @@ class TestEtheroll:
         """More advanced tests for topic support."""
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = "[]"
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll()
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -546,18 +537,15 @@ class TestEtheroll:
         )
         assert logs_url == (
             "https://api.etherscan.io/api?"
-            "module=logs&action=getLogs&apikey=apikey"
+            "module=logs&action=getLogs&apikey=YourApiKeyToken"
             "&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&"
             "fromBlock=1&toBlock=latest&"
         )
         # makes sure Testnet is also supported
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = "[]"
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll(chain_id=ChainID.ROPSTEN)
         address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         from_block = 1
@@ -582,7 +570,7 @@ class TestEtheroll:
         )
         assert logs_url == (
             "https://api-ropsten.etherscan.io/api?"
-            "module=logs&action=getLogs&apikey=apikey&"
+            "module=logs&action=getLogs&apikey=YourApiKeyToken&"
             "address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2&"
             "fromBlock=1&toBlock=latest&"
             "topic0=topic0&topic1=topic1&topic2=topic2&topic3=topic3&"
@@ -599,11 +587,8 @@ class TestEtheroll:
         contract_abi = [self.log_bet_abi]
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = json.dumps(contract_abi)
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll(contract_address=contract_address)
         player_address = "0x46044beaa1e985c67767e04de58181de5daaa00f"
         from_block = 5394085
@@ -612,7 +597,7 @@ class TestEtheroll:
             etheroll.get_log_bet_events(player_address, from_block, to_block)
         expected_call = mock.call(
             "https://api.etherscan.io/api?module=logs&action=getLogs"
-            "&apikey=apikey"
+            "&apikey=YourApiKeyToken"
             "&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
             "&fromBlock=5394085&toBlock=5442078&topic0=0x"
             "56b3f1a6cd856076d6f8adbf8170c43a0b0f532fc5696a2699a0e0cabc704163"
@@ -632,11 +617,8 @@ class TestEtheroll:
         contract_abi = [self.log_result_abi]
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = json.dumps(contract_abi)
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll(contract_address=contract_address)
         player_address = "0x46044beaa1e985c67767e04de58181de5daaa00f"
         from_block = 5394085
@@ -647,7 +629,7 @@ class TestEtheroll:
             )
         expected_call = mock.call(
             "https://api.etherscan.io/api?module=logs&action=getLogs"
-            "&apikey=apikey"
+            "&apikey=YourApiKeyToken"
             "&address=0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
             "&fromBlock=5394085&toBlock=5442078"
             "&topic0=0x"
@@ -994,7 +976,7 @@ class TestEtheroll:
             # not yet resolved (no `LogResult`)
             {"bet_log": bet_logs[2], "bet_result": None},
         ]
-        merged_logs = Etheroll.merge_logs(bet_logs, bet_results_logs)
+        merged_logs = merge_logs(bet_logs, bet_results_logs)
         assert merged_logs == expected_merged_logs
 
     def test_get_merged_logs(self):
@@ -1103,11 +1085,8 @@ class TestEtheroll:
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         with mock.patch(
             "etherscan.contracts.Contract.get_abi"
-        ) as m_get_abi, mock.patch(
-            "pyetheroll.etheroll.get_etherscan_api_key"
-        ) as m_get_etherscan_api_key:
+        ) as m_get_abi:
             m_get_abi.return_value = json.dumps(contract_abi)
-            m_get_etherscan_api_key.return_value = "apikey"
             etheroll = Etheroll(contract_address=contract_address)
         address = "0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
         with mock.patch("requests.sessions.Session.get") as m_get:
@@ -1126,7 +1105,7 @@ class TestEtheroll:
         expected_url = (
             "https://api.etherscan.io/api?module=account"
             "&address=0xAb5801a7D398351b8bE11C439e05C5B3259aeC9B"
-            "&tag=latest&apikey=apikey"
+            "&tag=latest&apikey=YourApiKeyToken"
             "&action=balance"
         )
         expected_call = mock.call(expected_url)

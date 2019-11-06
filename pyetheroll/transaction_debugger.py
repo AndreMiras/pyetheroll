@@ -4,11 +4,8 @@ from eth_abi import decode_abi
 from eth_utils import decode_hex, function_abi_to_4byte_selector
 from web3 import HTTPProvider, Web3
 
-from pyetheroll.constants import ChainID
-from pyetheroll.etherscan_utils import (
-    ChainEtherscanContractFactory,
-    get_etherscan_api_key,
-)
+from pyetheroll.constants import DEFAULT_API_KEY_TOKEN, ChainID
+from pyetheroll.etherscan_utils import ChainEtherscanContractFactory
 
 
 def decode_contract_call(contract_abi: list, call_data: str):
@@ -51,15 +48,14 @@ class TransactionDebugger:
 
     @staticmethod
     def get_contract_abi(
-        chain_id, contract_address, api_key_path: str = None
+        chain_id, contract_address, api_key: str = DEFAULT_API_KEY_TOKEN
     ) -> dict:
         """
         Given a contract address returns the contract ABI from Etherscan,
         refs #2
         """
-        key = get_etherscan_api_key(api_key_path)
         ChainEtherscanContract = ChainEtherscanContractFactory.create(chain_id)
-        api = ChainEtherscanContract(address=contract_address, api_key=key)
+        api = ChainEtherscanContract(address=contract_address, api_key=api_key)
         json_abi = api.get_abi()
         abi = json.loads(json_abi)
         return abi
