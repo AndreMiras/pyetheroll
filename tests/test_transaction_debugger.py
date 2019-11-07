@@ -273,7 +273,11 @@ class TestTransactionDebugger:
         json_abi = (
             '[{"constant":false,"inputs":[{"name":"_to","type":"address"},{"na'
             'me":"_value","type":"uint256"}],"name":"transfer","outputs":[{"na'
-            'me":"success","type":"bool"}],"payable":false,"type":"function"}]'
+            'me":"success","type":"bool"}],"payable":false,"type":"function"},'
+            '{"anonymous":false,"inputs":[{"indexed":true,"name":"BetID","type'
+            '":"bytes32"},{"indexed":true,"name":"PlayerAddress","type":"addre'
+            'ss"},{"indexed":true,"name":"RefundValue","type":"uint256"}],"nam'
+            'e":"LogRefund","type":"event"}]'
         )
         contract_abi = json.loads(json_abi)
         call_data = (

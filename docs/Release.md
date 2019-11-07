@@ -27,18 +27,17 @@ git push --tags
 
 Build it:
 ```sh
-python setup.py sdist bdist_wheel
+make release/build
 ```
 Check archive content:
 ```sh
 tar -tvf dist/pyetheroll-*.tar.gz
 ```
-Twine check and upload:
+Upload:
 ```sh
-twine check dist/*
-twine upload dist/*
+make release/upload
 ```
-Also publish the alias meta package `setup_meta.py`.
+This will also publish the alias meta package `setup_meta.py`.
 
 ## Check Read the Docs
 
