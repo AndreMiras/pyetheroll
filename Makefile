@@ -81,7 +81,7 @@ docs: docs/build
 release/clean:
 	rm -rf dist/ build/
 
-release/build: release/clean
+release/build: release/clean virtualenv
 	$(PYTHON) setup.py sdist bdist_wheel
 	$(PYTHON) setup_meta.py sdist bdist_wheel
 	$(TWINE) check dist/*
