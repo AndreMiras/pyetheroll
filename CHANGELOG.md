@@ -1,6 +1,6 @@
 # Change Log
 
-## [Unreleased]
+## [20191107]
 
   - API key refactoring
 

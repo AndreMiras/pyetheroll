@@ -11,7 +11,7 @@ def read(fname):
 # exposing the params so it can be imported
 setup_params = {
     "name": "pyetheroll",
-    "version": "20191018",
+    "version": "20191107",
     "description": "Python library to Etheroll smart contract",
     "long_description": read("README.md"),
     "long_description_content_type": "text/markdown",
