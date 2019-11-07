@@ -62,6 +62,7 @@ def merge_logs(bet_logs, bet_results_logs):
 
 class Etheroll:
 
+    _etheroll = None
     CONTRACT_ADDRESSES = {
         ChainID.MAINNET: "0xA52e014B3f5Cc48287c2D483A3E026C32cc76E6d",
         ChainID.ROPSTEN: "0xe12c6dEb59f37011d2D9FdeC77A6f1A8f3B8B1e8",
@@ -73,8 +74,9 @@ class Etheroll:
         chain_id: ChainID = ChainID.MAINNET,
         contract_address: str = None,
     ):
-        if contract_address is None:
-            contract_address = self.CONTRACT_ADDRESSES[chain_id]
+        contract_address = (
+            contract_address or self.CONTRACT_ADDRESSES[chain_id]
+        )
         self.contract_address = contract_address
         self.chain_id = chain_id
         # ethereum_tester = EthereumTester()
@@ -110,6 +112,26 @@ class Etheroll:
         self.functions_signatures = self.get_functions_signatures(
             self.contract_abi
         )
+
+    @classmethod
+    def get_or_create(
+        cls,
+        api_key: str = DEFAULT_API_KEY_TOKEN,
+        chain_id: ChainID = ChainID.MAINNET,
+        contract_address: str = None,
+    ):
+        """
+        Gets or creates the Etheroll object.
+        Also recreates the object if one init property changed.
+        """
+        contract_address = contract_address or cls.CONTRACT_ADDRESSES[chain_id]
+        if cls._etheroll is None or (
+            cls._etheroll.etherscan_api_key,
+            cls._etheroll.chain_id,
+            cls._etheroll.contract_address,
+        ) != (api_key, chain_id, contract_address):
+            cls._etheroll = cls(api_key, chain_id, contract_address)
+        return cls._etheroll
 
     def definitions(self, contract_abi, typ):
         """

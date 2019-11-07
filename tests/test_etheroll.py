@@ -182,6 +182,25 @@ class TestEtheroll:
             etheroll = Etheroll()
         assert etheroll.contract is not None
 
+    def test_get_or_create(self):
+        """
+        Checks that etheroll is cached.
+        The cached value should be updated on (testnet/mainnet) network change.
+        """
+        abi_str = "[]"
+        assert Etheroll._etheroll is None
+        with patch_get_abi(abi_str):
+            etheroll = Etheroll.get_or_create()
+        assert etheroll._etheroll is not None
+        # it's obviously pointing to the same object for now,
+        # but shouldn't not be later after we update some settings
+        assert etheroll == Etheroll.get_or_create() == Etheroll._etheroll
+        assert etheroll.chain_id == ChainID.MAINNET
+        # the cached object is invalidated if the network changes
+        with patch_get_abi(abi_str):
+            assert etheroll != Etheroll.get_or_create(chain_id=ChainID.ROPSTEN)
+        assert Etheroll._etheroll.chain_id == ChainID.ROPSTEN
+
     def create_account_helper(self, password):
         """
         Reduces the PBKDF2 iterations/work-factor to speed up account creation.
