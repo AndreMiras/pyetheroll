@@ -623,7 +623,8 @@ class TestEtheroll:
             "56b3f1a6cd856076d6f8adbf8170c43a0b0f532fc5696a2699a0e0cabc704163"
             "&topic2=0x"
             "00000000000000000000000046044beaa1e985c67767e04de58181de5daaa00f"
-            "&topic0_2_opr=and&"
+            "&topic0_2_opr=and&",
+            headers={'User-Agent': 'https://github.com/AndreMiras/pyetheroll'},
         )
         expected_calls = [expected_call]
         assert m_get.call_args_list == expected_calls
@@ -653,7 +654,8 @@ class TestEtheroll:
             "8dd0b145385d04711e29558ceab40b456976a2b9a7d648cc1bcd416161bf97b9"
             "&topic3=0x"
             "00000000000000000000000046044beaa1e985c67767e04de58181de5daaa00f"
-            "&topic0_3_opr=and&"
+            "&topic0_3_opr=and&",
+            headers={'User-Agent': 'https://github.com/AndreMiras/pyetheroll'},
         )
         expected_calls = [expected_call]
         assert m_get.call_args_list == expected_calls
@@ -1128,6 +1130,7 @@ class TestEtheroll:
         contract_address = "0x048717Ea892F23Fb0126F00640e2b18072efd9D2"
         expected_transactions = mock.sentinel
         m_ChainEtherscanAccount = mock.Mock(spec=EtherscanAccount)
+        m_ChainEtherscanAccount.return_value.http.headers = {}
         m_ChainEtherscanAccount.return_value.get_transaction_page = mock.Mock(
             return_value=expected_transactions
         )
