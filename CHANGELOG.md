@@ -1,5 +1,10 @@
 # Change Log
 
+## [20191108]
+
+  - Fix Ropsten 403 errors
+
+
 ## [20191107]
 
   - API key refactoring

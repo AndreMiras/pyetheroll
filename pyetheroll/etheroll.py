@@ -37,6 +37,9 @@ REQUESTS_CACHE_PARAMS = {
     # as we still want some very outdate data to get wiped at some point
     "expire_after": 30 * 24 * 60 * 60,
 }
+REQUESTS_HEADERS = {
+    "User-Agent": "https://github.com/AndreMiras/pyetheroll",
+}
 
 
 def abi_definitions(contract_abi, typ):
@@ -58,6 +61,16 @@ def merge_logs(bet_logs, bet_results_logs):
         merged_log = {"bet_log": bet_log, "bet_result": bet_result}
         merged_logs.append(merged_log)
     return merged_logs
+
+
+def update_user_agent(headers=None):
+    """
+    Default `requests` user agent is blocked on Ropsten, refs:
+      - https://github.com/corpetty/py-etherscan-api/issues/70
+      - https://www.reddit.com/r/etherscan/comments/dtg8xl/
+    """
+    headers = headers or {}
+    return dict(headers, **REQUESTS_HEADERS)
 
 
 class Etheroll:
@@ -97,6 +110,8 @@ class Etheroll:
             self.etherscan_contract_api = ChainEtherscanContract(
                 address=self.contract_address, api_key=self.etherscan_api_key
             )
+            self.etherscan_contract_api.http.headers = update_user_agent(
+                self.etherscan_contract_api.http.headers)
             self.contract_abi = json.loads(
                 self.etherscan_contract_api.get_abi()
             )
@@ -268,6 +283,8 @@ class Etheroll:
         etherscan_account_api = self.ChainEtherscanAccount(
             address=address, api_key=self.etherscan_api_key
         )
+        etherscan_account_api.http.headers = update_user_agent(
+            etherscan_account_api.http.headers)
         sort = "desc"
         try:
             transactions = etherscan_account_api.get_transaction_page(
@@ -534,7 +551,9 @@ class Etheroll:
             topic3,
             topic_opr,
         )
-        response = requests.get(url)
+
+        headers = update_user_agent()
+        response = requests.get(url, headers=headers)
         response = response.json()
         logs = response["result"]
         return logs
@@ -592,6 +611,8 @@ class Etheroll:
         etherscan_account_api = self.ChainEtherscanAccount(
             address=address, api_key=self.etherscan_api_key
         )
+        etherscan_account_api.http.headers = update_user_agent(
+            etherscan_account_api.http.headers)
         balance_wei = int(etherscan_account_api.get_balance())
         balance_eth = round(balance_wei / 1e18, ROUND_DIGITS)
         return balance_eth
