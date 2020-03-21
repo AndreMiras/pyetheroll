@@ -1,5 +1,9 @@
 # Change Log
 
+## [Unreleased]
+
+  - Move API keys to env var, refs #9
+
 ## [20191108]
 
   - Fix Ropsten 403 errors

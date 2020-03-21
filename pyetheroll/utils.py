@@ -1,6 +1,11 @@
+import os
 from datetime import datetime
 
-from pyetheroll.constants import ROUND_DIGITS
+from pyetheroll.constants import (
+    DEFAULT_ETHERSCAN_API_KEY,
+    DEFAULT_INFURA_PROJECT_ID,
+    ROUND_DIGITS,
+)
 
 
 class EtherollUtils:
@@ -34,3 +39,13 @@ def timestamp2datetime(timestamp: str) -> datetime:
         base = 16
     date_time = datetime.utcfromtimestamp(int(timestamp, base))
     return date_time
+
+
+def get_etherscan_api_key():
+    """Returns ETHERSCAN_API_KEY from environment variable."""
+    return os.environ.get("ETHERSCAN_API_KEY", DEFAULT_ETHERSCAN_API_KEY)
+
+
+def get_infura_project_id():
+    """Returns WEB3_INFURA_PROJECT_ID from environment variable."""
+    return os.environ.get("WEB3_INFURA_PROJECT_ID", DEFAULT_INFURA_PROJECT_ID)

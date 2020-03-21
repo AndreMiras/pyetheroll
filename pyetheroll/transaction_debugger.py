@@ -4,8 +4,9 @@ from eth_abi import decode_abi
 from eth_utils import decode_hex, function_abi_to_4byte_selector
 from web3 import HTTPProvider, Web3
 
-from pyetheroll.constants import DEFAULT_API_KEY_TOKEN, ChainID
+from pyetheroll.constants import ChainID
 from pyetheroll.etherscan_utils import ChainEtherscanContractFactory
+from pyetheroll.utils import get_etherscan_api_key, get_infura_project_id
 
 
 def decode_contract_call(contract_abi: list, call_data: str):
@@ -30,10 +31,14 @@ class HTTPProviderFactory:
         # ChainID.MAINNET: 'https://api.myetherapi.com/eth',
         # ChainID.MAINNET: 'https://api.infura.io/v1/jsonrpc/mainnet',
         # ChainID.MAINNET: 'https://api.mycryptoapi.com/eth',
-        ChainID.MAINNET: "https://mainnet.infura.io",
+        ChainID.MAINNET: (
+            f"https://mainnet.infura.io/v3/{get_infura_project_id()}"
+        ),
         # ChainID.ROPSTEN: 'https://api.myetherapi.com/rop',
         # ChainID.ROPSTEN: 'https://api.infura.io/v1/jsonrpc/ropsten',
-        ChainID.ROPSTEN: "https://ropsten.infura.io",
+        ChainID.ROPSTEN: (
+            f"https://ropsten.infura.io/v3/{get_infura_project_id()}"
+        ),
     }
 
     @classmethod
@@ -48,13 +53,12 @@ class TransactionDebugger:
         self.methods_infos = None
 
     @staticmethod
-    def get_contract_abi(
-        chain_id, contract_address, api_key: str = DEFAULT_API_KEY_TOKEN
-    ) -> dict:
+    def get_contract_abi(chain_id, contract_address) -> dict:
         """
         Given a contract address returns the contract ABI from Etherscan,
         refs #2
         """
+        api_key = get_etherscan_api_key()
         ChainEtherscanContract = ChainEtherscanContractFactory.create(chain_id)
         api = ChainEtherscanContract(address=contract_address, api_key=api_key)
         json_abi = api.get_abi()

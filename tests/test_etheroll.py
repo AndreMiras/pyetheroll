@@ -624,7 +624,7 @@ class TestEtheroll:
             "&topic2=0x"
             "00000000000000000000000046044beaa1e985c67767e04de58181de5daaa00f"
             "&topic0_2_opr=and&",
-            headers={'User-Agent': 'https://github.com/AndreMiras/pyetheroll'},
+            headers={"User-Agent": "https://github.com/AndreMiras/pyetheroll"},
         )
         expected_calls = [expected_call]
         assert m_get.call_args_list == expected_calls
@@ -655,7 +655,7 @@ class TestEtheroll:
             "&topic3=0x"
             "00000000000000000000000046044beaa1e985c67767e04de58181de5daaa00f"
             "&topic0_3_opr=and&",
-            headers={'User-Agent': 'https://github.com/AndreMiras/pyetheroll'},
+            headers={"User-Agent": "https://github.com/AndreMiras/pyetheroll"},
         )
         expected_calls = [expected_call]
         assert m_get.call_args_list == expected_calls
