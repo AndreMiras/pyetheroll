@@ -13,6 +13,7 @@ Welcome to pyetheroll's documentation!
    readme.rst
    Examples.md
    Release.md
+   changelog.rst
 
 
 Indices and tables

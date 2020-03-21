@@ -13,12 +13,7 @@ from hexbytes.main import HexBytes
 from web3 import Web3
 from web3.contract import Contract
 
-from pyetheroll.constants import (
-    DEFAULT_API_KEY_TOKEN,
-    DEFAULT_GAS_PRICE_WEI,
-    ROUND_DIGITS,
-    ChainID,
-)
+from pyetheroll.constants import DEFAULT_GAS_PRICE_WEI, ROUND_DIGITS, ChainID
 from pyetheroll.etherscan_utils import (
     ChainEtherscanAccountFactory,
     ChainEtherscanContractFactory,
@@ -27,7 +22,7 @@ from pyetheroll.transaction_debugger import (
     HTTPProviderFactory,
     TransactionDebugger,
 )
-from pyetheroll.utils import timestamp2datetime
+from pyetheroll.utils import get_etherscan_api_key, timestamp2datetime
 
 REQUESTS_CACHE_PARAMS = {
     "cache_name": "requests_cache",
@@ -83,7 +78,6 @@ class Etheroll:
 
     def __init__(
         self,
-        api_key: str = DEFAULT_API_KEY_TOKEN,
         chain_id: ChainID = ChainID.MAINNET,
         contract_address: str = None,
     ):
@@ -96,7 +90,7 @@ class Etheroll:
         # self.provider = EthereumTesterProvider(ethereum_tester)
         self.provider = HTTPProviderFactory.create(self.chain_id)
         self.web3 = Web3(self.provider)
-        self.etherscan_api_key = api_key
+        self.etherscan_api_key = get_etherscan_api_key()
         ChainEtherscanContract = ChainEtherscanContractFactory.create(
             self.chain_id
         )
@@ -111,7 +105,8 @@ class Etheroll:
                 address=self.contract_address, api_key=self.etherscan_api_key
             )
             self.etherscan_contract_api.http.headers = update_user_agent(
-                self.etherscan_contract_api.http.headers)
+                self.etherscan_contract_api.http.headers
+            )
             self.contract_abi = json.loads(
                 self.etherscan_contract_api.get_abi()
             )
@@ -130,10 +125,7 @@ class Etheroll:
 
     @classmethod
     def get_or_create(
-        cls,
-        api_key: str = DEFAULT_API_KEY_TOKEN,
-        chain_id: ChainID = ChainID.MAINNET,
-        contract_address: str = None,
+        cls, chain_id: ChainID = ChainID.MAINNET, contract_address: str = None,
     ):
         """
         Gets or creates the Etheroll object.
@@ -141,11 +133,10 @@ class Etheroll:
         """
         contract_address = contract_address or cls.CONTRACT_ADDRESSES[chain_id]
         if cls._etheroll is None or (
-            cls._etheroll.etherscan_api_key,
             cls._etheroll.chain_id,
             cls._etheroll.contract_address,
-        ) != (api_key, chain_id, contract_address):
-            cls._etheroll = cls(api_key, chain_id, contract_address)
+        ) != (chain_id, contract_address):
+            cls._etheroll = cls(chain_id, contract_address)
         return cls._etheroll
 
     def definitions(self, contract_abi, typ):
@@ -284,7 +275,8 @@ class Etheroll:
             address=address, api_key=self.etherscan_api_key
         )
         etherscan_account_api.http.headers = update_user_agent(
-            etherscan_account_api.http.headers)
+            etherscan_account_api.http.headers
+        )
         sort = "desc"
         try:
             transactions = etherscan_account_api.get_transaction_page(
@@ -612,7 +604,8 @@ class Etheroll:
             address=address, api_key=self.etherscan_api_key
         )
         etherscan_account_api.http.headers = update_user_agent(
-            etherscan_account_api.http.headers)
+            etherscan_account_api.http.headers
+        )
         balance_wei = int(etherscan_account_api.get_balance())
         balance_eth = round(balance_wei / 1e18, ROUND_DIGITS)
         return balance_eth

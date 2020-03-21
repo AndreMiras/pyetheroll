@@ -37,6 +37,11 @@ etheroll = Etheroll(chain_id, contract_address)
 
 Find out more in [docs/Examples.md](docs/Examples.md).
 
+## API keys
+Both Etherscan and Infura require API keys which are retrieved from the following environment variables:
+- `ETHERSCAN_API_KEY` (consumed by pyetheroll directly)
+- `WEB3_INFURA_PROJECT_ID` (consumed by [web3.py](https://github.com/ethereum/web3.py))
+
 ## Install
 
 [Latest stable release](https://github.com/AndreMiras/pyetheroll/tree/master):
