@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+  - Automates PyPI deployment, refs #10
+
+
 ## [20200320]
 
   - Move API keys to env var, refs #9
