@@ -24,7 +24,8 @@ git push --tags
 ```
 
 ## Publish to PyPI
-
+This process is handled automatically by Travis.
+If needed below are the instructions to perform it manually.
 Build it:
 ```sh
 make release/build

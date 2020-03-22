@@ -44,17 +44,17 @@ def abi_definitions(contract_abi, typ):
 
 def merge_logs(bet_logs, bet_results_logs):
     """Merges bet logs (LogBet) with bet results logs (LogResult)."""
-    merged_logs = []
+    merged_logs = ()
     # per bet ID dictionary
     bet_results_dict = {}
     for bet_result in bet_results_logs:
         bet_id = bet_result["bet_id"]
-        bet_results_dict.update({bet_id: bet_result})
+        bet_results_dict = dict(bet_results_dict, **{bet_id: bet_result})
     for bet_log in bet_logs:
         bet_id = bet_log["bet_id"]
         bet_result = bet_results_dict.get(bet_id)
         merged_log = {"bet_log": bet_log, "bet_result": bet_result}
-        merged_logs.append(merged_log)
+        merged_logs += (merged_log,)
     return merged_logs
 
 
@@ -164,7 +164,7 @@ class Etheroll:
         for name in definitions:
             definition = definitions[name]
             signature = Web3.keccak(text=definition)
-            signatures.update({name: signature})
+            signatures = dict(signatures, **{name: signature})
         return signatures
 
     def get_events_signatures(self, contract_abi=None):
@@ -185,10 +185,7 @@ class Etheroll:
         Note that usually providers disable this feature from their API.
         """
         events_signatures = self.events_signatures
-        topics = []
-        for event in event_list:
-            topic = events_signatures[event].hex()
-            topics.append(topic)
+        topics = list(events_signatures[event].hex() for event in event_list)
         event_filter = self.web3.eth.filter(
             {
                 "fromBlock": "earliest",
@@ -315,7 +312,7 @@ class Etheroll:
         Retrieves `address` last bets from transactions and returns the list
         of bets infos. Does not return the actual roll result.
         """
-        bets = []
+        bets = ()
         transactions = self.get_player_roll_dice_tx(
             address=address, page=page, offset=offset
         )
@@ -339,7 +336,7 @@ class Etheroll:
                 "datetime": date_time,
                 "transaction_hash": transaction_hash,
             }
-            bets.append(bet)
+            bets += (bet,)
         return bets
 
     def get_bets_logs(self, address, from_block, to_block="latest"):
@@ -348,7 +345,7 @@ class Etheroll:
         of bets with decoded info. Does not return the actual roll result.
         Least recent first (index 0), most recent last (index -1).
         """
-        bets = []
+        bets = ()
         bet_events = self.get_log_bet_events(address, from_block, to_block)
         transaction_debugger = TransactionDebugger(self.contract_abi)
         for bet_event in bet_events:
@@ -379,7 +376,7 @@ class Etheroll:
                 "datetime": date_time,
                 "transaction_hash": transaction_hash,
             }
-            bets.append(bet)
+            bets += (bet,)
         return bets
 
     def get_bet_results_logs(self, address, from_block, to_block="latest"):
@@ -387,7 +384,7 @@ class Etheroll:
         Retrieves `address` bet results from event logs and returns the list of
         bet results with decoded info.
         """
-        results = []
+        results = ()
         result_events = self.get_log_result_events(
             address, from_block, to_block
         )
@@ -418,7 +415,7 @@ class Etheroll:
                 "datetime": date_time,
                 "transaction_hash": transaction_hash,
             }
-            results.append(bet)
+            results += (bet,)
         return results
 
     def get_last_bets_blocks(self, address):
@@ -447,7 +444,7 @@ class Etheroll:
         """
         last_bets_blocks = self.get_last_bets_blocks(address)
         if last_bets_blocks is None:
-            return []
+            return ()
         from_block = last_bets_blocks["from_block"]
         to_block = last_bets_blocks["to_block"]
         bet_logs = self.get_bets_logs(address, from_block, to_block)
@@ -471,18 +468,18 @@ class Etheroll:
         """Builds the Etherscan API URL call for the `getLogs` action."""
         url = self.ChainEtherscanAccount.PREFIX
         url += "module=logs&action=getLogs&"
-        url += "apikey={}&".format(self.etherscan_api_key)
-        url += "address={}&".format(address)
-        url += "fromBlock={}&".format(from_block)
-        url += "toBlock={}&".format(to_block)
+        url += f"apikey={self.etherscan_api_key}&"
+        url += f"address={address}&"
+        url += f"fromBlock={from_block}&"
+        url += f"toBlock={to_block}&"
         if topic0 is not None:
-            url += "topic0={}&".format(topic0)
+            url += f"topic0={topic0}&"
         if topic1 is not None:
-            url += "topic1={}&".format(topic1)
+            url += f"topic1={topic1}&"
         if topic2 is not None:
-            url += "topic2={}&".format(topic2)
+            url += f"topic2={topic2}&"
         if topic3 is not None:
-            url += "topic3={}&".format(topic3)
+            url += f"topic3={topic3}&"
         if topic_opr is not None:
             topic0_1_opr = topic_opr.get("topic0_1_opr", "")
             topic0_1_opr = (

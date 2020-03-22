@@ -491,7 +491,7 @@ class TestEtheroll:
             )
         # we should have only two bets returns as the first transaction
         # was not made to the Etheroll contract
-        assert bets == [
+        assert bets == (
             {
                 "bet_size_ether": 0.5,
                 "roll_under": 14,
@@ -514,7 +514,7 @@ class TestEtheroll:
                     "ef94fd4fae37632a5f56ea49bee44dd59"
                 ),
             },
-        ]
+        )
         # makes sure underlying library was used properly
         expected_call = mock.call(
             internal=False, offset=3, page=1, sort="desc"
@@ -741,7 +741,7 @@ class TestEtheroll:
         ) as m_get_log_bet_events:
             m_get_log_bet_events.return_value = get_log_bet_events
             logs = etheroll.get_bets_logs(address, from_block, to_block)
-        expected_logs = [
+        expected_logs = (
             {
                 "bet_id": (
                     "15e007148ec621d996c886de0f2b88a0"
@@ -774,7 +774,7 @@ class TestEtheroll:
                     "051a4eb1b0b91a160c680295e7fab5bfe"
                 ),
             },
-        ]
+        )
         assert logs == expected_logs
 
     def test_get_bet_results_logs(self):
@@ -876,7 +876,7 @@ class TestEtheroll:
             results = etheroll.get_bet_results_logs(
                 address, from_block, to_block
             )
-        expected_results = [
+        expected_results = (
             {
                 "bet_id": (
                     "15e007148ec621d996c886de0f2b88a0"
@@ -907,7 +907,7 @@ class TestEtheroll:
                     "530d0770ade8e2c71488b8eb881ad20e9"
                 ),
             },
-        ]
+        )
         assert results == expected_results
 
     def test_get_last_bets_blocks(self):
@@ -986,12 +986,12 @@ class TestEtheroll:
     def test_merge_logs(self):
         bet_logs = self.bet_logs
         bet_results_logs = self.bet_results_logs
-        expected_merged_logs = [
+        expected_merged_logs = (
             {"bet_log": bet_logs[0], "bet_result": bet_results_logs[0]},
             {"bet_log": bet_logs[1], "bet_result": bet_results_logs[1]},
             # not yet resolved (no `LogResult`)
             {"bet_log": bet_logs[2], "bet_result": None},
-        ]
+        )
         merged_logs = merge_logs(bet_logs, bet_results_logs)
         assert merged_logs == expected_merged_logs
 
@@ -1024,12 +1024,12 @@ class TestEtheroll:
             m_get_bets_logs.return_value = bet_logs
             m_get_bet_results_logs.return_value = bet_results_logs
             merged_logs = etheroll.get_merged_logs(address)
-        expected_merged_logs = [
+        expected_merged_logs = (
             {"bet_log": bet_logs[0], "bet_result": bet_results_logs[0]},
             {"bet_log": bet_logs[1], "bet_result": bet_results_logs[1]},
             # not yet resolved (no `LogResult`)
             {"bet_log": bet_logs[2], "bet_result": None},
-        ]
+        )
         assert merged_logs == expected_merged_logs
 
     def test_get_merged_logs_empty_tx(self):
@@ -1053,7 +1053,7 @@ class TestEtheroll:
             )
             # the library should not crash but return an empty list
             merged_logs = etheroll.get_merged_logs(address)
-        assert merged_logs == []
+        assert merged_logs == ()
 
     def test_get_merged_logs_no_matching_tx(self):
         """
@@ -1087,7 +1087,7 @@ class TestEtheroll:
             )
             merged_logs = etheroll.get_merged_logs(address)
         # merged logs should simply be empty
-        assert merged_logs == []
+        assert merged_logs == ()
 
     def test_get_balance(self):
         """

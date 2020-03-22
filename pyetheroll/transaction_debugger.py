@@ -17,12 +17,17 @@ def decode_contract_call(contract_abi: list, call_data: str):
     function_descriptions = filter(
         lambda x: x.get("type") == "function", contract_abi
     )
-    for description in function_descriptions:
-        if function_abi_to_4byte_selector(description) == method_signature:
-            method_name = description["name"]
-            arg_types = [item["type"] for item in description["inputs"]]
-            args = decode_abi(arg_types, call_data_bin[4:])
-            return (method_name, args)
+    description = next(
+        filter(
+            lambda description: function_abi_to_4byte_selector(description)
+            == method_signature,
+            function_descriptions,
+        )
+    )
+    method_name = description["name"]
+    arg_types = [item["type"] for item in description["inputs"]]
+    args = decode_abi(arg_types, call_data_bin[4:])
+    return (method_name, args)
 
 
 class HTTPProviderFactory:
@@ -50,7 +55,7 @@ class HTTPProviderFactory:
 class TransactionDebugger:
     def __init__(self, contract_abi):
         self.contract_abi = contract_abi
-        self.methods_infos = None
+        self._methods_infos = None
 
     @staticmethod
     def get_contract_abi(chain_id, contract_address) -> dict:
@@ -83,8 +88,15 @@ class TransactionDebugger:
                 "sha3": event_sha3,
                 "abi": description,
             }
-            methods_infos.update({method_name: method_info})
+            methods_infos = dict(methods_infos, **{method_name: method_info})
         return methods_infos
+
+    @property
+    def methods_infos(self):
+        """Cached property so it's computed once."""
+        if not self._methods_infos:
+            self._methods_infos = self.get_methods_infos(self.contract_abi)
+        return self._methods_infos
 
     def decode_method(self, topics, log_data):
         """Given a topic and log data, decode the event."""
@@ -97,12 +109,12 @@ class TransactionDebugger:
         log_data = log_data.lower().replace("0x", "")
         log_data = bytes.fromhex(log_data)
         topics_log_data += log_data
-        if self.methods_infos is None:
-            self.methods_infos = self.get_methods_infos(self.contract_abi)
-        method_info = None
-        for (event, info) in self.methods_infos.items():
-            if info["sha3"].lower() == topic.lower():
-                method_info = info
+        method_info = next(
+            filter(
+                lambda info: info["sha3"].lower() == topic.lower(),
+                self.methods_infos.values(),
+            )
+        )
         event_inputs = method_info["abi"]["inputs"]
         types = [e_input["type"] for e_input in event_inputs]
         # hot patching `bytes` type to replace it with bytes32 since the former
@@ -132,11 +144,11 @@ class TransactionDebugger:
     @classmethod
     def decode_transaction_logs(cls, chain_id, transaction_hash):
         """Given a transaction hash, reads and decode the event log."""
-        decoded_methods = []
         provider = HTTPProviderFactory.create(chain_id)
         web3 = Web3(provider)
         transaction_receipt = web3.eth.getTransactionReceipt(transaction_hash)
         logs = transaction_receipt.logs
-        for log in logs:
-            decoded_methods.append(cls.decode_transaction_log(chain_id, log))
+        decoded_methods = tuple(
+            cls.decode_transaction_log(chain_id, log) for log in logs
+        )
         return decoded_methods

@@ -34,9 +34,7 @@ def timestamp2datetime(timestamp: str) -> datetime:
     >>> timestamp2datetime('0x5d611eda')
     datetime.datetime(2019, 8, 24, 11, 26, 18)
     """
-    base = 10
-    if timestamp.startswith("0x"):
-        base = 16
+    base = 16 if timestamp.startswith("0x") else 10
     date_time = datetime.utcfromtimestamp(int(timestamp, base))
     return date_time
 

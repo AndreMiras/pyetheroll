@@ -1,5 +1,11 @@
 # Change Log
 
+## [20200322]
+
+  - Automate PyPI deployment, refs #10
+  - Add Python3.8 support, refs #11
+
+
 ## [20200320]
 
   - Move API keys to env var, refs #9
