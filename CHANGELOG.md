@@ -2,7 +2,8 @@
 
 ## [Unreleased]
 
-  - Automates PyPI deployment, refs #10
+  - Automate PyPI deployment, refs #10
+  - Add Python3.8 support, refs #10
 
 
 ## [20200320]
