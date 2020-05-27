@@ -72,7 +72,7 @@ class Etheroll:
 
     _etheroll = None
     CONTRACT_ADDRESSES = {
-        ChainID.MAINNET: "0xA52e014B3f5Cc48287c2D483A3E026C32cc76E6d",
+        ChainID.MAINNET: "0xf478c8Bc5448236d52067c96F8f4C8376E62Fa8f",
         ChainID.ROPSTEN: "0xe12c6dEb59f37011d2D9FdeC77A6f1A8f3B8B1e8",
     }
 
