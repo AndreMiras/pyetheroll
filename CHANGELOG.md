@@ -1,5 +1,10 @@
 # Change Log
 
+## [Unreleased]
+
+  - Migrate to new contract
+
+
 ## [20200322]
 
   - Automate PyPI deployment, refs #10
